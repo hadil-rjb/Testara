@@ -53,7 +53,7 @@ export default function Navbar() {
   const logoIcon = (
     <div className="flex h-8 w-8 items-center justify-center rounded-lg">
       <Image
-        src="/logo.png"
+        src="/Logo.png"
         alt="Logo"
         width={30}
         height={30}

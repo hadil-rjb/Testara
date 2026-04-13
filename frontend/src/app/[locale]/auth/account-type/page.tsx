@@ -43,8 +43,8 @@ export default function AccountTypePage() {
       }
       await completeOnboarding(data);
       router.push("/dashboard");
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Something went wrong");
+    } catch (err: unknown) {
+      setError((err as { response?: { data?: { message?: string } } }).response?.data?.message || "Something went wrong");
     } finally {
       setSubmitting(false);
     }
@@ -218,7 +218,7 @@ export default function AccountTypePage() {
         <div className="text-center px-12">
           <div className="w-20 h-20 rounded-ful flex items-center justify-center mx-auto mb-3">
             <Image
-              src="/logo.png"
+              src="/Logo.png"
               alt="Logo"
               width={60}
               height={60}

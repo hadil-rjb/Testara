@@ -29,8 +29,8 @@ export default function LoginPage() {
       router.push(
         user.onboardingCompleted ? "/dashboard" : "/auth/account-type",
       );
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Login failed");
+    } catch (err: unknown) {
+      setError((err as { response?: { data?: { message?: string } } }).response?.data?.message || "Login failed");
     }
   };
 
@@ -45,7 +45,7 @@ export default function LoginPage() {
         <div className="flex justify-center mb-4">
           <div className="w-14 h-14 rounded-full flex items-center justify-center">
             <Image
-              src="/logo.png"
+              src="/Logo.png"
               alt="Logo"
               width={50}
               height={50}
