@@ -1,0 +1,173 @@
+{
+  "common": {
+    "testara": "Testara",
+    "getStarted": "Get Started",
+    "learnMore": "Learn More",
+    "back": "Back",
+    "or": "Or",
+    "seeMore": "See More",
+    "search": "Search for projects...",
+    "loading": "Loading..."
+  },
+  "nav": {
+    "features": "Features",
+    "howItWorks": "How it works",
+    "testimonials": "Testimonials",
+    "faq": "FAQ",
+    "pricing": "Pricing",
+    "signUp": "Sign Up",
+    "login": "Sign In"
+  },
+  "hero": {
+    "badge": "AI-Powered QA Automation",
+    "titleLine1": "Ship faster with",
+    "titleLine2": "intelligent testing",
+    "description": "Testara explores your website, generates tailored test scenarios, automatically executes them, and provides precise reports — guided by an AI agent at every step."
+  },
+  "features": {
+    "sectionLabel": "What you get",
+    "title": "Everything your QA team needs",
+    "subtitle": "From exploration to reporting — one platform, one agent, zero configuration",
+    "exploration": {
+      "title": "Smart Exploration",
+      "description": "The agent automatically maps all pages, interactions, user flows, and roles. Zero effort from your side."
+    },
+    "scenarios": {
+      "title": "AI Scenario Generation",
+      "description": "Describe what to test: Get ready-to-run scenarios."
+    },
+    "execution": {
+      "title": "Automated Execution",
+      "description": "Tests run on QA, UAT, or PROD. Real-time result streaming with retry logic and recap."
+    },
+    "security": {
+      "title": "Security Audit",
+      "description": "OWASP Top 10 checks, JWT analysis, SQL injection probing, and dependency CVE analysis."
+    },
+    "reports": {
+      "title": "Custom Reports",
+      "description": "Each report is specific to your test type — Performance, E2E, Security, or UI/UX."
+    },
+    "collaboration": {
+      "title": "Team Collaboration",
+      "description": "Invite members, assign roles, and share reports with links. Built for QA teams of all sizes."
+    }
+  },
+  "process": {
+    "sectionLabel": "The process",
+    "title": "Four phases, fully guided",
+    "subtitle": "The agent guides you through each step — asking for your input exactly at the right moment",
+    "step1": {
+      "title": "Explore and Understand",
+      "description": "Paste your URL. The agent maps every page, every click, and every user flow — building a complete context model of your application."
+    },
+    "step2": {
+      "title": "Generate Scenarios",
+      "description": "Choose a test type — E2E, Security, Performance, or UI/UX. The agent generates tailored and validated tests."
+    },
+    "step3": {
+      "title": "Execute and Fix",
+      "description": "Watch tests run in real-time. When failures occur, the agent analyzes, suggests fixes, and automatically retries."
+    },
+    "step4": {
+      "title": "Custom Reports",
+      "description": "Get a report built for your test type — with relevant metrics, comparisons, and actionable recommendations."
+    }
+  },
+  "cta": {
+    "title": "Test your application now",
+    "subtitle": "Join hundreds of teams that trust AI-powered tests to ship faster with confidence.",
+    "button": "Get Started"
+  },
+  "testimonials": {
+    "sectionLabel": "Testimonial",
+    "title": "Experiences Shared by Our Clients",
+    "review1": "As a long-time user of WDK AI ToolKit, I can confidently say that their solutions have revolutionised the way we operate.",
+    "review2": "Testara has completely transformed our QA workflow. The AI agent catches bugs we never would have found manually.",
+    "review3": "The automated test generation saved our team hundreds of hours. The reports are incredibly detailed and actionable."
+  },
+  "faq": {
+    "sectionLabel": "Need help?",
+    "title": "Frequently Asked Questions.",
+    "subtitle": "Still have doubts? More questions? This might help!",
+    "q1": {
+      "question": "What is Webflow and why is it the best website builder?",
+      "answer": "Webflow is a powerful visual development platform that allows designers to create fully responsive websites without writing a single line of code. It combines code flexibility with a visual editor's simplicity."
+    },
+    "q2": {
+      "question": "What is your preferred model among BRIX models?",
+      "answer": "We recommend starting with our Enterprise model which offers the best value-to-features ratio for QA teams."
+    },
+    "q3": {
+      "question": "How to clone a Webflow template from the showcase?",
+      "answer": "Visit our showcase, select the desired template, then click the 'Clone' button to add it to your Webflow dashboard."
+    },
+    "q4": {
+      "question": "Why is BRIX Templates the best Webflow agency?",
+      "answer": "Our team combines technical expertise and creative design to deliver web solutions that exceed our clients' expectations."
+    }
+  },
+  "footer": {
+    "features": "Features",
+    "solutions": "Solutions",
+    "docs": "Docs",
+    "pricing": "Plans",
+    "about": "About"
+  },
+  "auth": {
+    "welcomeBack": "Welcome to Testara",
+    "email": "Email Address",
+    "emailPlaceholder": "example@email.com",
+    "password": "Password",
+    "passwordPlaceholder": "8 characters minimum",
+    "forgotPassword": "Forgot password?",
+    "login": "Sign in",
+    "loginWithGoogle": "Sign in with Google",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign up",
+    "haveAccount": "Already have an account?",
+    "signIn": "Sign in",
+    "joinUs": "Join us",
+    "chooseAccountType": "Choose Your Account Type",
+    "chooseAccountSubtitle": "To start this journey, tell us what type of account you want to open.",
+    "individual": "Individual",
+    "individualDesc": "Personal account to manage all your activities.",
+    "enterprise": "Enterprise",
+    "enterpriseDesc": "Whether you own or belong to a company, this is for you.",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "companyName": "Company Name",
+    "createAccount": "Create Account",
+    "createAccountSubtitle": "Create your account to start testing your applications with AI.",
+    "signUpWithGoogle": "Sign up with Google",
+    "continue": "Continue",
+    "forgotPasswordTitle": "Forgot Password",
+    "forgotPasswordDesc": "Enter your email address and we'll send you a link to reset your password.",
+    "sendResetLink": "Send Reset Link",
+    "resetPasswordTitle": "Reset Password",
+    "resetPasswordDesc": "Enter your new password.",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "resetPassword": "Reset"
+  },
+  "dashboard": {
+    "hello": "Hello",
+    "newProject": "New Project",
+    "projects": "Projects",
+    "reports": "Reports",
+    "team": "Team",
+    "settings": "Settings",
+    "recentProjects": "Your recent projects",
+    "projectName": "Project Name",
+    "urlPlaceholder": "https://example.com",
+    "urlHint": "Enter a URL and select test types to start AI analysis",
+    "passed": "passed",
+    "failed": "failed",
+    "totalScenarios": "total scenarios",
+    "environment": {
+      "dev": "Dev",
+      "staging": "Staging",
+      "prod": "Prod"
+    }
+  }
+}

@@ -1,0 +1,173 @@
+{
+  "common": {
+    "testara": "Testara",
+    "getStarted": "Commencez maintenant",
+    "learnMore": "En savoir plus",
+    "back": "Retour",
+    "or": "Ou",
+    "seeMore": "Voir Plus",
+    "search": "Search for projets...",
+    "loading": "Chargement..."
+  },
+  "nav": {
+    "features": "Fonctionnalités",
+    "howItWorks": "Comment ça marche",
+    "testimonials": "Témoignages",
+    "faq": "FAQ",
+    "pricing": "Structure",
+    "signUp": "S'inscrire",
+    "login": "Se Connecter"
+  },
+  "hero": {
+    "badge": "Automatisation QA alimentées par l'IA",
+    "titleLine1": "Expédiez plus rapidement avec",
+    "titleLine2": "test intelligent",
+    "description": "Testara explore votre site web, génère des scénarios de test sur mesure, les exécute automatiquement et fournit des rapports précis — guidé par un agent IA à chaque étape."
+  },
+  "features": {
+    "sectionLabel": "Ce que vous obtenez",
+    "title": "Tout ce dont votre équipe QA a besoin",
+    "subtitle": "De l'exploration au reporting — une plateforme, un agent, zéro configuration",
+    "exploration": {
+      "title": "Exploration Intelligente",
+      "description": "L'agent cartographie automatiquement toutes les pages, interactions, flux utilisateur, et rôles. Aucun effort côté utilisateur."
+    },
+    "scenarios": {
+      "title": "Génération de Scénarios IA",
+      "description": "Décrivez ce que l'architecture du test: Obtenez des scénarios prêts à exécuter."
+    },
+    "execution": {
+      "title": "Exécution Automatisée",
+      "description": "Les tests s'exécutent sur GX, UAT, ou PROD. Diffusion en temps réel des résultats sous la logique de relance et recapitulation."
+    },
+    "security": {
+      "title": "Audit de Sécurité",
+      "description": "Vérifications OWASP Top 10, analyse JWT, sondage d'injection SQL et analyse des CVE de dépendances."
+    },
+    "reports": {
+      "title": "Rapports Personnalisés",
+      "description": "Chaque rapport est spécifique à votre type de test — Performance, E2E, Sécurité ou UI/UX."
+    },
+    "collaboration": {
+      "title": "Collaboration d'Équipe",
+      "description": "Invitez des membres, assignez des rôles, et partagez des rapports avec des liens. Conçu pour les équipes QA de toutes tailles."
+    }
+  },
+  "process": {
+    "sectionLabel": "Le processus",
+    "title": "Quatre phases, entièrement guidées",
+    "subtitle": "L'agent vous guide à travers chaque étape — demandant votre avis exactement au bon moment",
+    "step1": {
+      "title": "Explorer et Comprendre",
+      "description": "Collez votre URL. L'agent cartographie chaque page, chaque clic, et chaque flux utilisateur — construisant un modèle de contexte complet de votre application."
+    },
+    "step2": {
+      "title": "Générer des Scénarios",
+      "description": "Choisissez un type de test — E2E, Sécurité, Performance, ou UI/UX. L'agent génère des tests sur mesure et validés."
+    },
+    "step3": {
+      "title": "Exécuter et Corriger",
+      "description": "Regardez les tests s'exécuter en temps réel. Lorsque des échecs se produisent, l'agent analyse, propose des corrections et relance automatiquement."
+    },
+    "step4": {
+      "title": "Rapports Personnalisés",
+      "description": "Obtenez un rapport construit pour votre type de test — avec des métriques pertinentes, des comparaisons et des recommandations exploitables."
+    }
+  },
+  "cta": {
+    "title": "Testez votre application maintenant",
+    "subtitle": "Rejoignez des centaines d'équipes qui font confiance aux tests alimentés par l'IA pour expédier plus rapidement avec confiance.",
+    "button": "Commencez maintenant"
+  },
+  "testimonials": {
+    "sectionLabel": "Témoignages",
+    "title": "Les expériences partagées par nos clients",
+    "review1": "En tant qu'utilisateur de longue date de WDK AI ToolKit, je peux affirmer avec confiance que leurs solutions ont révolutionné notre façon de travailler.",
+    "review2": "Testara a complètement transformé notre flux de travail QA. L'agent IA détecte des bugs que nous n'aurions jamais trouvés manuellement.",
+    "review3": "La génération automatisée de tests a fait gagner des centaines d'heures à notre équipe. Les rapports sont incroyablement détaillés et exploitables."
+  },
+  "faq": {
+    "sectionLabel": "Besoin d'aide ?",
+    "title": "Questions fréquemment posées.",
+    "subtitle": "Vous avez encore des doutes ? D'autres questions ? Cela pourrait vous aider !",
+    "q1": {
+      "question": "Qu'est-ce que Webflow et pourquoi est-ce le meilleur constructeur de sites web ?",
+      "answer": "Webflow est une plateforme de développement visuel puissante qui permet aux designers de créer des sites web entièrement responsives sans écrire une seule ligne de code. Elle combine la flexibilité du code avec la simplicité d'un éditeur visuel, permettant aux créateurs de donner vie à leurs idées plus rapidement et plus efficacement que jamais."
+    },
+    "q2": {
+      "question": "Quel est votre modèle préféré parmi les modèles BRIX ?",
+      "answer": "Nous recommandons de commencer avec notre modèle Enterprise qui offre le meilleur rapport qualité-fonctionnalités pour les équipes QA."
+    },
+    "q3": {
+      "question": "Comment cloner un modèle Webflow depuis la vitrine ?",
+      "answer": "Visitez notre vitrine, sélectionnez le modèle souhaité, puis cliquez sur le bouton 'Cloner' pour l'ajouter à votre tableau de bord Webflow."
+    },
+    "q4": {
+      "question": "Pourquoi BRIX Templates est-il la meilleure agence Webflow ?",
+      "answer": "Notre équipe combine expertise technique et design créatif pour livrer des solutions web qui dépassent les attentes de nos clients."
+    }
+  },
+  "footer": {
+    "features": "Fonctionnalités",
+    "solutions": "Solutions",
+    "docs": "Docs",
+    "pricing": "Plans",
+    "about": "À propos"
+  },
+  "auth": {
+    "welcomeBack": "Bienvenue à Testara",
+    "email": "Adresse e-mail",
+    "emailPlaceholder": "exemple@email.com",
+    "password": "Mot de passe",
+    "passwordPlaceholder": "8 caractères minimum",
+    "forgotPassword": "Mot de passe oublié?",
+    "login": "Se connecter",
+    "loginWithGoogle": "Se connecter avec Google",
+    "noAccount": "Vous n'avez pas de compte ?",
+    "signUp": "Inscrivez-vous",
+    "haveAccount": "Vous avez déjà un compte ?",
+    "signIn": "Connectez-vous",
+    "joinUs": "Rejoignez-nous",
+    "chooseAccountType": "Choisissez Votre Type de Compte",
+    "chooseAccountSubtitle": "Pour commencer ce parcours, dites-nous quel type de compte vous souhaitez ouvrir.",
+    "individual": "Individuel",
+    "individualDesc": "Compte personnel pour gérer toutes vos activités.",
+    "enterprise": "Entreprise",
+    "enterpriseDesc": "Que vous possédiez ou apparteniez à une entreprise, c'est pour vous.",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "companyName": "Nom de l'entreprise",
+    "createAccount": "Créer un compte",
+    "createAccountSubtitle": "Créez votre compte pour commencer à tester vos applications avec l'IA.",
+    "signUpWithGoogle": "S'inscrire avec Google",
+    "continue": "Continuer",
+    "forgotPasswordTitle": "Mot de passe oublié",
+    "forgotPasswordDesc": "Entrez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser votre mot de passe.",
+    "sendResetLink": "Envoyer le lien",
+    "resetPasswordTitle": "Réinitialiser le mot de passe",
+    "resetPasswordDesc": "Entrez votre nouveau mot de passe.",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "resetPassword": "Réinitialiser"
+  },
+  "dashboard": {
+    "hello": "Bonjour",
+    "newProject": "Nouvelle Projet",
+    "projects": "Projects",
+    "reports": "Reports",
+    "team": "Team",
+    "settings": "Paramètres",
+    "recentProjects": "Vos récents projets",
+    "projectName": "Project Name",
+    "urlPlaceholder": "https://example.com",
+    "urlHint": "Entrez une URL et sélectionnez les types de tests pour commencer l'analyse IA",
+    "passed": "réussis",
+    "failed": "échoués",
+    "totalScenarios": "scénarios au total",
+    "environment": {
+      "dev": "Dev",
+      "staging": "Staging",
+      "prod": "Prod"
+    }
+  }
+}
