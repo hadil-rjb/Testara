@@ -77,23 +77,6 @@ p {
   letter-spacing: -0.02em;
 }
 
-/* ── Focus ring — global default ── */
-:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-  border-radius: 8px;
-}
-
-button:focus-visible,
-a:focus-visible,
-[role='button']:focus-visible,
-input:focus-visible,
-textarea:focus-visible,
-select:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px var(--focus-ring);
-}
-
 /* ── Selection & scrollbar ── */
 ::selection {
   background-color: var(--color-primary);
