@@ -169,5 +169,157 @@
       "staging": "Staging",
       "prod": "Prod"
     }
+  },
+  "projects": {
+    "title": "Projects",
+    "subtitle": "Gérez et collaborez au sein des équipes de votre organisation.",
+    "addProject": "Ajouter Projet",
+    "export": "Export",
+    "search": "Recherche...",
+    "filter": "Filtre",
+    "sortBy": "Trier par",
+    "sortNewest": "Plus récent",
+    "sortOldest": "Plus ancien",
+    "sortName": "Nom",
+    "perPage": "/ page",
+    "pageOf": "Page {current} sur {total}",
+    "empty": "Aucun projet pour le moment",
+    "emptySubtitle": "Créez votre premier projet pour démarrer l'analyse IA",
+    "rename": "Renommer",
+    "delete": "Supprimer",
+    "confirmDelete": "Supprimer ce projet ?",
+    "confirmDeleteDesc": "Cette action est irréversible. Toutes les données liées à ce projet seront perdues.",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "newProjectTitle": "Nouveau projet",
+    "newProjectSubtitle": "Entrez le nom et l'URL pour démarrer l'analyse",
+    "create": "Créer",
+    "activeFilters": "filtre actif | {count} filtres actifs",
+    "clearAll": "Tout effacer",
+    "totalResults": "{count} résultat(s)",
+    "exportPdf": "Exporter en PDF",
+    "exportExcel": "Exporter en Excel (.xlsx)",
+    "exportCsv": "Exporter en CSV",
+    "filters": {
+      "title": "Filtres",
+      "environment": "Environnement",
+      "status": "Statut",
+      "createdWithin": "Créé",
+      "range_all": "Tout",
+      "range_today": "Aujourd'hui",
+      "range_week": "7 derniers jours",
+      "range_month": "30 derniers jours",
+      "apply": "Appliquer",
+      "reset": "Réinitialiser"
+    }
+  },
+  "settings": {
+    "title": "Paramètres",
+    "subtitle": "Gérez votre profil, votre sécurité et vos préférences",
+    "tabs": {
+      "profile": "Profil",
+      "security": "Sécurité",
+      "preferences": "Préférences"
+    },
+    "profile": {
+      "title": "Informations personnelles",
+      "subtitle": "Ces informations sont visibles par votre équipe",
+      "avatarTitle": "Photo de profil",
+      "avatarSubtitle": "JPG, PNG ou GIF — max 2 Mo",
+      "upload": "Changer la photo",
+      "remove": "Supprimer",
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "email": "Adresse e-mail",
+      "emailHint": "Nous utiliserons cette adresse pour vous contacter",
+      "save": "Enregistrer les modifications",
+      "saved": "Modifications enregistrées",
+      "avatarTooLarge": "L'image est trop volumineuse (max 2 Mo)",
+      "invalidImage": "Type de fichier non supporté"
+    },
+    "security": {
+      "title": "Mot de passe",
+      "subtitle": "Choisissez un mot de passe fort pour protéger votre compte",
+      "currentPassword": "Mot de passe actuel",
+      "newPassword": "Nouveau mot de passe",
+      "confirmPassword": "Confirmer le nouveau mot de passe",
+      "mismatch": "Les mots de passe ne correspondent pas",
+      "tooShort": "Le mot de passe doit comporter au moins 8 caractères",
+      "save": "Mettre à jour le mot de passe",
+      "updated": "Mot de passe mis à jour avec succès",
+      "currentIncorrect": "Mot de passe actuel incorrect",
+      "googleUser": "Votre compte utilise la connexion Google. Le mot de passe ne peut pas être modifié ici."
+    },
+    "preferences": {
+      "title": "Préférences",
+      "subtitle": "Personnalisez votre expérience Testara",
+      "language": "Langue",
+      "languageSubtitle": "Choisissez la langue de l'interface",
+      "theme": "Thème",
+      "themeSubtitle": "Basculez entre clair et sombre",
+      "themeLight": "Clair",
+      "themeDark": "Sombre",
+      "saved": "Préférences enregistrées"
+    },
+    "dangerZone": {
+      "title": "Zone dangereuse",
+      "subtitle": "Actions irréversibles sur votre compte",
+      "logout": "Se déconnecter",
+      "logoutSubtitle": "Vous devrez vous reconnecter pour accéder à votre espace."
+    }
+  },
+  "workspace": {
+    "share": "Partager",
+    "loadingTitle": "Préparation de votre espace de travail",
+    "loadingSubtitle": "Nous récupérons les détails du projet...",
+    "crawlingTitle": "Exploration du site en cours",
+    "crawlingSubtitle": "L'agent cartographie chaque page, chaque lien et chaque flux utilisateur",
+    "crawlStep1": "Connexion à votre site",
+    "crawlStep2": "Découverte des pages",
+    "crawlStep3": "Analyse des formulaires et liens",
+    "crawlStep4": "Détection des flux utilisateur",
+    "tabs": {
+      "exploration": "Exploration",
+      "scenarios": "Scénarios",
+      "report": "Rapport"
+    },
+    "crawl": {
+      "title": "Résultats du Crawl",
+      "subtitle": "Analyse automatique de la structure du site",
+      "attempt": "Tentative",
+      "totalPages": "Pages analysées",
+      "userFlows": "Flux utilisateur",
+      "routes": "Routes détectées",
+      "recrawl": "Relancer le crawl"
+    },
+    "sitemap": {
+      "title": "Plan du site",
+      "subtitle": "Liste des pages découvertes",
+      "page": "Page",
+      "url": "URL",
+      "links": "Liens",
+      "forms": "Formulaires",
+      "images": "Images"
+    },
+    "flows": {
+      "title": "Flux utilisateur",
+      "subtitle": "Parcours identifiés par l'agent",
+      "steps": "étapes"
+    },
+    "agent": {
+      "title": "Assistant IA",
+      "subtitle": "En attente de votre réponse...",
+      "online": "En ligne",
+      "inputPlaceholder": "Tapez votre réponse...",
+      "yes": "Oui",
+      "no": "Non",
+      "send": "Envoyer",
+      "greeting": "Bonjour ! Je vais explorer votre site pour cartographier toutes les pages et les flux utilisateur.",
+      "askScope": "Souhaitez-vous que j'explore uniquement les pages publiques, ou également les zones authentifiées ?",
+      "userChoice": "Uniquement les pages publiques pour le moment.",
+      "confirmStart": "Parfait. Puis-je lancer l'exploration maintenant ?",
+      "inProgress": "Exploration en cours — cartographie des pages et détection des flux...",
+      "doneSummary": "J'ai trouvé 20 pages et 5 flux utilisateur. Voulez-vous relancer le crawl avec une profondeur plus importante ?"
+    }
   }
 }

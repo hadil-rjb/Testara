@@ -4,6 +4,7 @@ import { useState, FormEvent } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useAuthStore } from "@/stores/auth-store";
+import { useRouter } from "@/i18n/routing";
 import { projectApi } from "@/lib/api";
 import { FolderOpen, Globe, ArrowUp } from "lucide-react";
 
@@ -16,6 +17,7 @@ export default function WelcomeSection({
 }: WelcomeSectionProps) {
   const t = useTranslations("dashboard");
   const { user } = useAuthStore();
+  const router = useRouter();
 
   const [projectName, setProjectName] = useState("");
   const [projectUrl, setProjectUrl] = useState("");
@@ -27,10 +29,16 @@ export default function WelcomeSection({
 
     setIsSubmitting(true);
     try {
-      await projectApi.create({ name: projectName, url: projectUrl });
+      const { data } = await projectApi.create({
+        name: projectName,
+        url: projectUrl,
+      });
       setProjectName("");
       setProjectUrl("");
       onProjectCreated?.();
+      if (data?._id) {
+        router.push(`/workspace/${data._id}?new=1`);
+      }
     } catch {
       // Error handling can be extended
     } finally {
@@ -100,7 +108,7 @@ export default function WelcomeSection({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-10 h-10 rounded-2xl flex items-center justify-center text-white transition-all disabled:opacity-60 flex-shrink-0 hover:scale-105 active:scale-95"
+                className="w-10 h-10 rounded-2xl flex items-center justify-center text-white dark:text-black transition-all disabled:opacity-60 flex-shrink-0 hover:scale-105 active:scale-95"
                 style={{ backgroundColor: "var(--text-primary)" }}
               >
                 <ArrowUp size={18} />

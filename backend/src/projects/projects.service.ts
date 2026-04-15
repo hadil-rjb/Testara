@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Project, ProjectDocument } from './schemas/project.schema';
-import { CreateProjectDto } from './dto/project.dto';
+import { CreateProjectDto, UpdateProjectDto } from './dto/project.dto';
 
 @Injectable()
 export class ProjectsService {
@@ -27,6 +27,20 @@ export class ProjectsService {
 
   async findById(id: string): Promise<ProjectDocument> {
     const project = await this.projectModel.findById(id).populate('owner', 'firstName lastName avatar');
+    if (!project) throw new NotFoundException('Projet non trouvé');
+    return project;
+  }
+
+  async update(
+    id: string,
+    userId: string,
+    updateProjectDto: UpdateProjectDto,
+  ): Promise<ProjectDocument> {
+    const project = await this.projectModel.findOneAndUpdate(
+      { _id: id, owner: userId },
+      { $set: updateProjectDto },
+      { new: true },
+    ).populate('owner', 'firstName lastName avatar');
     if (!project) throw new NotFoundException('Projet non trouvé');
     return project;
   }

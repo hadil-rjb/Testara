@@ -1,25 +1,20 @@
 import { create } from 'zustand';
-import { authApi, userApi } from '@/lib/api';
-
-interface User {
-  _id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  accountType: string;
-  onboardingCompleted: boolean;
-  avatar?: string;
-  themePreference: string;
-  languagePreference: string;
-}
+import { authApi, userApi, type UpdateProfileData, type RegisterPayload } from '@/lib/api';
+import { STORAGE_KEYS } from '@/lib/constants';
+import type { User } from '@/types';
 
 interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+
   login: (email: string, password: string) => Promise<User>;
-  register: (data: any) => Promise<User>;
-  completeOnboarding: (data: { accountType: string; companyName?: string }) => Promise<User>;
+  register: (data: RegisterPayload) => Promise<User>;
+  completeOnboarding: (data: {
+    accountType: string;
+    companyName?: string;
+  }) => Promise<User>;
+  updateProfile: (data: UpdateProfileData) => Promise<User>;
   logout: () => void;
   fetchUser: () => Promise<void>;
   setTokens: (accessToken: string, refreshToken: string) => void;
@@ -30,19 +25,19 @@ export const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: false,
   isLoading: true,
 
-  login: async (email: string, password: string) => {
+  login: async (email, password) => {
     const { data } = await authApi.login({ email, password });
-    localStorage.setItem('accessToken', data.accessToken);
-    localStorage.setItem('refreshToken', data.refreshToken);
+    localStorage.setItem(STORAGE_KEYS.accessToken, data.accessToken);
+    localStorage.setItem(STORAGE_KEYS.refreshToken, data.refreshToken);
     const { data: user } = await userApi.getProfile();
     set({ user, isAuthenticated: true });
     return user;
   },
 
-  register: async (registerData: any) => {
+  register: async (registerData) => {
     const { data } = await authApi.register(registerData);
-    localStorage.setItem('accessToken', data.accessToken);
-    localStorage.setItem('refreshToken', data.refreshToken);
+    localStorage.setItem(STORAGE_KEYS.accessToken, data.accessToken);
+    localStorage.setItem(STORAGE_KEYS.refreshToken, data.refreshToken);
     const { data: user } = await userApi.getProfile();
     set({ user, isAuthenticated: true });
     return user;
@@ -54,15 +49,21 @@ export const useAuthStore = create<AuthState>((set) => ({
     return user;
   },
 
+  updateProfile: async (profileData) => {
+    const { data: user } = await userApi.updateProfile(profileData);
+    set({ user });
+    return user;
+  },
+
   logout: () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
+    localStorage.removeItem(STORAGE_KEYS.accessToken);
+    localStorage.removeItem(STORAGE_KEYS.refreshToken);
     set({ user: null, isAuthenticated: false });
   },
 
   fetchUser: async () => {
     try {
-      const token = localStorage.getItem('accessToken');
+      const token = localStorage.getItem(STORAGE_KEYS.accessToken);
       if (!token) {
         set({ isLoading: false });
         return;
@@ -74,8 +75,8 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 
-  setTokens: (accessToken: string, refreshToken: string) => {
-    localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('refreshToken', refreshToken);
+  setTokens: (accessToken, refreshToken) => {
+    localStorage.setItem(STORAGE_KEYS.accessToken, accessToken);
+    localStorage.setItem(STORAGE_KEYS.refreshToken, refreshToken);
   },
 }));

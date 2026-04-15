@@ -1,7 +1,8 @@
 "use client";
 
+import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
-import { FolderOpen, Globe } from "lucide-react";
+import { FolderOpen, Globe, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
 interface ProjectCardProps {
   name: string;
@@ -14,6 +15,8 @@ interface ProjectCardProps {
   duration?: string;
   avatar?: string;
   ownerInitials?: string;
+  onRename?: () => void;
+  onDelete?: () => void;
 }
 
 export default function ProjectCard({
@@ -27,12 +30,28 @@ export default function ProjectCard({
   duration = "0m 0s",
   avatar,
   ownerInitials = "",
+  onRename,
+  onDelete,
 }: ProjectCardProps) {
   const t = useTranslations("dashboard");
+  const tp = useTranslations("projects");
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  const hasMenu = Boolean(onRename || onDelete);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const close = (e: MouseEvent) => {
+      if (!menuRef.current?.contains(e.target as Node)) setMenuOpen(false);
+    };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, [menuOpen]);
 
   return (
     <div className="rounded-2xl border border-theme surface-card shadow-card transition-all duration-200 hover:shadow-card-hover cursor-pointer group">
-      {/* Header: project name + avatar */}
+      {/* Header: project name + avatar/menu */}
       <div className="flex items-center justify-between p-5 pb-4">
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-9 h-9 rounded-lg surface-tertiary flex items-center justify-center flex-shrink-0">
@@ -42,13 +61,66 @@ export default function ProjectCard({
             {name}
           </span>
         </div>
-        <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-primary/10 border-2 border-primary/20 flex-shrink-0 ml-3">
-          {avatar ? (
-            <img src={avatar} alt="" className="w-full h-full object-cover" />
-          ) : (
-            <span className="text-primary text-[11px] font-bold">
-              {ownerInitials}
-            </span>
+
+        <div className="flex items-center gap-1.5 flex-shrink-0 ml-3">
+          <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-primary/10 border-2 border-primary/20">
+            {avatar ? (
+              <img src={avatar} alt="" className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-primary text-[11px] font-bold">
+                {ownerInitials}
+              </span>
+            )}
+          </div>
+
+          {hasMenu && (
+            <div className="relative" ref={menuRef}>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setMenuOpen((v) => !v);
+                }}
+                className="w-7 h-7 rounded-lg flex items-center justify-center text-muted transition-colors hover:surface-tertiary hover:text-heading"
+                aria-label="Menu"
+              >
+                <MoreHorizontal size={16} />
+              </button>
+
+              {menuOpen && (
+                <div
+                  className="absolute right-0 top-full mt-1 w-40 rounded-xl border border-theme surface-card shadow-lg z-20 overflow-hidden"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {onRename && (
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setMenuOpen(false);
+                        onRename();
+                      }}
+                      className="flex items-center gap-2.5 w-full px-3.5 py-2.5 text-sm text-body transition-colors hover:surface-tertiary"
+                    >
+                      <Pencil size={14} />
+                      {tp("rename")}
+                    </button>
+                  )}
+                  {onDelete && (
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setMenuOpen(false);
+                        onDelete();
+                      }}
+                      className="flex items-center gap-2.5 w-full px-3.5 py-2.5 text-sm text-error transition-colors hover:surface-tertiary"
+                    >
+                      <Trash2 size={14} />
+                      {tp("delete")}
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
           )}
         </div>
       </div>

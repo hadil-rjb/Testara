@@ -42,7 +42,11 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
-    fetchProjects();
+    const frame = requestAnimationFrame(() => {
+      void fetchProjects();
+    });
+
+    return () => cancelAnimationFrame(frame);
   }, [fetchProjects]);
 
   const ownerInitials = user
@@ -72,23 +76,24 @@ export default function DashboardPage() {
         {projects.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
             {projects.slice(0, 6).map((project) => (
-              <ProjectCard
-                key={project._id}
-                name={project.name}
-                url={project.url}
-                status={project.status || 'Crawl'}
-                environment={project.environment || 'Dev'}
-                passed={project.passed ?? 0}
-                failed={project.failed ?? 0}
-                totalScenarios={project.totalScenarios ?? 0}
-                duration={project.duration || '0m 0s'}
-                avatar={project.owner?.avatar || user?.avatar}
-                ownerInitials={
-                  project.owner
-                    ? `${project.owner.firstName?.charAt(0) || ''}${project.owner.lastName?.charAt(0) || ''}`
-                    : ownerInitials
-                }
-              />
+              <Link key={project._id} href={`/workspace/${project._id}`}>
+                <ProjectCard
+                  name={project.name}
+                  url={project.url}
+                  status={project.status || 'Crawl'}
+                  environment={project.environment || 'Dev'}
+                  passed={project.passed ?? 0}
+                  failed={project.failed ?? 0}
+                  totalScenarios={project.totalScenarios ?? 0}
+                  duration={project.duration || '0m 0s'}
+                  avatar={project.owner?.avatar || user?.avatar}
+                  ownerInitials={
+                    project.owner
+                      ? `${project.owner.firstName?.charAt(0) || ''}${project.owner.lastName?.charAt(0) || ''}`
+                      : ownerInitials
+                  }
+                />
+              </Link>
             ))}
           </div>
         ) : (

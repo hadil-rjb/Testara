@@ -31,8 +31,11 @@ export default function ResetPasswordPage() {
     try {
       await authApi.resetPassword(token, password);
       router.push('/auth/login');
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Something went wrong');
+    } catch (err) {
+      const message =
+        (err as { response?: { data?: { message?: string } } })?.response?.data
+          ?.message ?? 'Something went wrong';
+      setError(message);
     } finally {
       setIsSubmitting(false);
     }

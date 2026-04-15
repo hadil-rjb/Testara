@@ -169,5 +169,157 @@
       "staging": "Staging",
       "prod": "Prod"
     }
+  },
+  "projects": {
+    "title": "Projects",
+    "subtitle": "Manage and collaborate within your organization's teams.",
+    "addProject": "Add Project",
+    "export": "Export",
+    "search": "Search...",
+    "filter": "Filter",
+    "sortBy": "Sort by",
+    "sortNewest": "Newest",
+    "sortOldest": "Oldest",
+    "sortName": "Name",
+    "perPage": "/ page",
+    "pageOf": "Page {current} of {total}",
+    "empty": "No projects yet",
+    "emptySubtitle": "Create your first project to start AI analysis",
+    "rename": "Rename",
+    "delete": "Delete",
+    "confirmDelete": "Delete this project?",
+    "confirmDeleteDesc": "This action cannot be undone. All data linked to this project will be lost.",
+    "cancel": "Cancel",
+    "save": "Save",
+    "newProjectTitle": "New project",
+    "newProjectSubtitle": "Enter the name and URL to start AI analysis",
+    "create": "Create",
+    "activeFilters": "active filter | {count} active filters",
+    "clearAll": "Clear all",
+    "totalResults": "{count} result(s)",
+    "exportPdf": "Export as PDF",
+    "exportExcel": "Export as Excel (.xlsx)",
+    "exportCsv": "Export as CSV",
+    "filters": {
+      "title": "Filters",
+      "environment": "Environment",
+      "status": "Status",
+      "createdWithin": "Created",
+      "range_all": "All time",
+      "range_today": "Today",
+      "range_week": "Last 7 days",
+      "range_month": "Last 30 days",
+      "apply": "Apply",
+      "reset": "Reset"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your profile, security, and preferences",
+    "tabs": {
+      "profile": "Profile",
+      "security": "Security",
+      "preferences": "Preferences"
+    },
+    "profile": {
+      "title": "Personal information",
+      "subtitle": "This information is visible to your team",
+      "avatarTitle": "Profile picture",
+      "avatarSubtitle": "JPG, PNG or GIF — max 2 MB",
+      "upload": "Change photo",
+      "remove": "Remove",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email address",
+      "emailHint": "We'll use this address to contact you",
+      "save": "Save changes",
+      "saved": "Changes saved",
+      "avatarTooLarge": "Image is too large (max 2 MB)",
+      "invalidImage": "Unsupported file type"
+    },
+    "security": {
+      "title": "Password",
+      "subtitle": "Choose a strong password to keep your account safe",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm new password",
+      "mismatch": "Passwords don't match",
+      "tooShort": "Password must be at least 8 characters",
+      "save": "Update password",
+      "updated": "Password updated successfully",
+      "currentIncorrect": "Current password is incorrect",
+      "googleUser": "Your account uses Google sign-in. The password cannot be changed here."
+    },
+    "preferences": {
+      "title": "Preferences",
+      "subtitle": "Customize your Testara experience",
+      "language": "Language",
+      "languageSubtitle": "Choose the interface language",
+      "theme": "Theme",
+      "themeSubtitle": "Switch between light and dark",
+      "themeLight": "Light",
+      "themeDark": "Dark",
+      "saved": "Preferences saved"
+    },
+    "dangerZone": {
+      "title": "Danger zone",
+      "subtitle": "Irreversible actions on your account",
+      "logout": "Log out",
+      "logoutSubtitle": "You'll need to sign in again to access your workspace."
+    }
+  },
+  "workspace": {
+    "share": "Share",
+    "loadingTitle": "Preparing your workspace",
+    "loadingSubtitle": "Fetching project details...",
+    "crawlingTitle": "Crawling your website",
+    "crawlingSubtitle": "The agent is mapping every page, link, and user flow",
+    "crawlStep1": "Connecting to your site",
+    "crawlStep2": "Discovering pages",
+    "crawlStep3": "Analyzing forms and links",
+    "crawlStep4": "Detecting user flows",
+    "tabs": {
+      "exploration": "Exploration",
+      "scenarios": "Scenarios",
+      "report": "Report"
+    },
+    "crawl": {
+      "title": "Crawl Results",
+      "subtitle": "Automatic site structure analysis",
+      "attempt": "Attempt",
+      "totalPages": "Pages analyzed",
+      "userFlows": "User flows",
+      "routes": "Detected routes",
+      "recrawl": "Re-run crawl"
+    },
+    "sitemap": {
+      "title": "Sitemap",
+      "subtitle": "Discovered pages",
+      "page": "Page",
+      "url": "URL",
+      "links": "Links",
+      "forms": "Forms",
+      "images": "Images"
+    },
+    "flows": {
+      "title": "User Flows",
+      "subtitle": "Journeys identified by the agent",
+      "steps": "steps"
+    },
+    "agent": {
+      "title": "AI Helper",
+      "subtitle": "Waiting for your response...",
+      "online": "Online",
+      "inputPlaceholder": "Type your answer...",
+      "yes": "Yes",
+      "no": "No",
+      "send": "Send",
+      "greeting": "Hi! I'll explore your site to map all pages and user flows.",
+      "askScope": "Should I explore only public pages, or also authenticated areas?",
+      "userChoice": "Only public pages for now.",
+      "confirmStart": "Perfect. Can I start the exploration now?",
+      "inProgress": "Exploration running — mapping pages and detecting flows...",
+      "doneSummary": "I found 20 pages and 5 user flows. Would you like to re-run the crawl with deeper coverage?"
+    }
   }
 }

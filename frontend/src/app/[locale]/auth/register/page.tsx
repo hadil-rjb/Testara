@@ -26,8 +26,11 @@ export default function RegisterPage() {
     try {
       await register({ firstName, lastName, email, password });
       router.push('/auth/account-type');
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed');
+    } catch (err) {
+      const message =
+        (err as { response?: { data?: { message?: string } } })?.response?.data
+          ?.message ?? 'Registration failed';
+      setError(message);
     }
   };
 

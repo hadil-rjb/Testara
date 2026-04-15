@@ -12,3 +12,14 @@ export class CreateProjectDto {
   @IsOptional()
   environment?: string;
 }
+
+export class UpdateProjectDto {
+  @IsString()
+  @IsOptional()
+  @IsNotEmpty()
+  name?: string;
+
+  @IsString()
+  @IsOptional()
+  environment?: string;
+}

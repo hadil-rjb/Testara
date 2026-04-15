@@ -22,8 +22,11 @@ export default function ForgotPasswordPage() {
     try {
       await authApi.forgotPassword(email);
       setSuccess(true);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Something went wrong');
+    } catch (err) {
+      const message =
+        (err as { response?: { data?: { message?: string } } })?.response?.data
+          ?.message ?? 'Something went wrong';
+      setError(message);
     } finally {
       setIsSubmitting(false);
     }

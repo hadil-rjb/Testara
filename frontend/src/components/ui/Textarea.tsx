@@ -1,0 +1,30 @@
+import { forwardRef, TextareaHTMLAttributes } from 'react';
+import { cn } from '@/lib/utils';
+
+export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+  invalid?: boolean;
+}
+
+export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
+  ({ className, invalid, disabled, rows = 4, ...props }, ref) => {
+    return (
+      <textarea
+        ref={ref}
+        rows={rows}
+        disabled={disabled}
+        aria-invalid={invalid || undefined}
+        className={cn(
+          'w-full rounded-xl border surface-input px-3.5 py-2.5 text-sm text-heading placeholder:text-muted',
+          'outline-none resize-y transition-[border-color,box-shadow] duration-150',
+          invalid
+            ? 'border-error focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-error)_25%,transparent)]'
+            : 'border-theme focus:border-primary focus:shadow-focus-ring',
+          disabled && 'opacity-60 cursor-not-allowed',
+          className,
+        )}
+        {...props}
+      />
+    );
+  },
+);
+Textarea.displayName = 'Textarea';

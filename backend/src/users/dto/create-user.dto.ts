@@ -44,6 +44,10 @@ export class UpdateUserDto {
   @IsOptional()
   lastName?: string;
 
+  @IsEmail()
+  @IsOptional()
+  email?: string;
+
   @IsString()
   @IsOptional()
   themePreference?: string;
@@ -55,4 +59,14 @@ export class UpdateUserDto {
   @IsString()
   @IsOptional()
   avatar?: string;
+}
+
+export class ChangePasswordDto {
+  @IsString()
+  @IsNotEmpty()
+  currentPassword: string;
+
+  @IsString()
+  @MinLength(8)
+  newPassword: string;
 }

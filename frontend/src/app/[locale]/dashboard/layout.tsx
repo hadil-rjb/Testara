@@ -3,8 +3,7 @@
 import { useEffect } from 'react';
 import { useAuthStore } from '@/stores/auth-store';
 import { useRouter } from '@/i18n/routing';
-import Sidebar from '@/components/dashboard/Sidebar';
-import TopBar from '@/components/dashboard/TopBar';
+import { Sidebar, TopBar } from '@/components/layout';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, isAuthenticated, isLoading } = useAuthStore();

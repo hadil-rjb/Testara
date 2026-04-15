@@ -1,0 +1,7 @@
+@import 'tailwindcss';
+@config '../../tailwind.config.ts';
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@import './themes.css';
+@import './base.css';

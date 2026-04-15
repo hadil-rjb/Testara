@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Delete, Body, Param, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, UseGuards, Req } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
-import { CreateProjectDto } from './dto/project.dto';
+import { CreateProjectDto, UpdateProjectDto } from './dto/project.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('projects')
@@ -21,6 +21,15 @@ export class ProjectsController {
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.projectsService.findById(id);
+  }
+
+  @Patch(':id')
+  async update(
+    @Param('id') id: string,
+    @Body() updateProjectDto: UpdateProjectDto,
+    @Req() req,
+  ) {
+    return this.projectsService.update(id, req.user.userId, updateProjectDto);
   }
 
   @Delete(':id')
