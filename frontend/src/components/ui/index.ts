@@ -64,3 +64,6 @@ export type { SwitchProps } from './Switch';
 
 export { Textarea } from './Textarea';
 export type { TextareaProps } from './Textarea';
+
+export { Toast } from './Toast';
+export { Toaster } from './Toaster';

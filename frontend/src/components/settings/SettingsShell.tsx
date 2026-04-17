@@ -25,7 +25,7 @@ export default function SettingsShell({
   ];
 
   return (
-    <div className="max-w-8xl mx-auto">
+    <div className="max-w-8xl mx-auto mt-8">
       <div className="mb-8">
         <h1 className="text-2xl font-bold font-heading text-heading">
           {t('title')}

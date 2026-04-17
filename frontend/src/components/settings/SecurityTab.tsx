@@ -4,15 +4,17 @@ import { useState, FormEvent } from 'react';
 import { useTranslations } from 'next-intl';
 import { userApi } from '@/lib/api';
 import { useAuthStore } from '@/stores/auth-store';
+import { useToast } from '@/hooks/useToast';
+import { Button } from '@/components/ui';
 import { Lock, Eye, EyeOff, Save, ShieldAlert } from 'lucide-react';
+import { getApiError } from '@/lib/utils';
 
-interface SecurityTabProps {
-  onToast: (kind: 'success' | 'error', message: string) => void;
-}
+const MIN_PASSWORD_LENGTH = 8;
 
-export default function SecurityTab({ onToast }: SecurityTabProps) {
+export default function SecurityTab() {
   const t = useTranslations('settings.security');
   const { user, logout } = useAuthStore();
+  const toast = useToast();
 
   const [current, setCurrent] = useState('');
   const [next, setNext] = useState('');
@@ -22,38 +24,28 @@ export default function SecurityTab({ onToast }: SecurityTabProps) {
   const [showNext, setShowNext] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
-  const isGoogleOnly =
-    (user as unknown as { isGoogleUser?: boolean })?.isGoogleUser === true;
+  const isGoogleOnly = (user as unknown as { isGoogleUser?: boolean })?.isGoogleUser === true;
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    if (next.length < 8) {
-      onToast('error', t('tooShort'));
+    if (next.length < MIN_PASSWORD_LENGTH) {
+      toast.error(t('tooShort'));
       return;
     }
     if (next !== confirm) {
-      onToast('error', t('mismatch'));
+      toast.error(t('mismatch'));
       return;
     }
 
     setSaving(true);
     try {
-      await userApi.changePassword({
-        currentPassword: current,
-        newPassword: next,
-      });
-      setCurrent('');
-      setNext('');
-      setConfirm('');
-      onToast('success', t('updated'));
-    } catch (err: unknown) {
-      const e = err as { response?: { status?: number; data?: { message?: string } } };
-      if (e.response?.status === 401) {
-        onToast('error', t('currentIncorrect'));
-      } else {
-        onToast('error', e.response?.data?.message || 'Error');
-      }
+      await userApi.changePassword({ currentPassword: current, newPassword: next });
+      setCurrent(''); setNext(''); setConfirm('');
+      toast.success(t('updated'));
+    } catch (err) {
+      const status = (err as { response?: { status?: number } })?.response?.status;
+      toast.error(status === 401 ? t('currentIncorrect') : getApiError(err));
     } finally {
       setSaving(false);
     }
@@ -67,9 +59,7 @@ export default function SecurityTab({ onToast }: SecurityTabProps) {
             <ShieldAlert size={20} className="text-primary" />
           </div>
           <div>
-            <h2 className="text-base font-semibold font-heading text-heading mb-1">
-              {t('title')}
-            </h2>
+            <h2 className="text-base font-semibold font-heading text-heading mb-1">{t('title')}</h2>
             <p className="text-sm text-body">{t('googleUser')}</p>
           </div>
         </div>
@@ -80,9 +70,7 @@ export default function SecurityTab({ onToast }: SecurityTabProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <section className="rounded-2xl border border-theme surface-card p-6">
-        <h2 className="text-base font-semibold font-heading text-heading mb-1">
-          {t('title')}
-        </h2>
+        <h2 className="text-base font-semibold font-heading text-heading mb-1">{t('title')}</h2>
         <p className="text-sm text-body mb-5">{t('subtitle')}</p>
 
         <div className="space-y-4">
@@ -116,18 +104,14 @@ export default function SecurityTab({ onToast }: SecurityTabProps) {
       </section>
 
       <div className="flex justify-end">
-        <button
+        <Button
           type="submit"
+          loading={saving}
           disabled={saving || !current || !next || !confirm}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white text-sm font-semibold transition-colors hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed"
+          leftIcon={!saving ? <Save size={15} /> : undefined}
         >
-          {saving ? (
-            <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-          ) : (
-            <Save size={15} />
-          )}
           {t('save')}
-        </button>
+        </Button>
       </div>
 
       <DangerZoneCard onLogout={logout} />
@@ -147,22 +131,13 @@ interface PasswordFieldProps {
 }
 
 function PasswordField({
-  label,
-  value,
-  onChange,
-  show,
-  onToggleShow,
-  autoComplete,
-  strengthMeter,
-  error,
+  label, value, onChange, show, onToggleShow, autoComplete, strengthMeter, error,
 }: PasswordFieldProps) {
   const strength = strengthMeter ? computeStrength(value) : null;
 
   return (
     <div>
-      <label className="block text-xs font-semibold text-heading mb-1.5">
-        {label}
-      </label>
+      <label className="block text-xs font-semibold text-heading mb-1.5">{label}</label>
       <div
         className={`flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 border surface-input transition-all ${
           error
@@ -183,6 +158,7 @@ function PasswordField({
           onClick={onToggleShow}
           className="text-muted hover:text-heading transition-colors"
           tabIndex={-1}
+          aria-label={show ? 'Hide password' : 'Show password'}
         >
           {show ? <EyeOff size={16} /> : <Eye size={16} />}
         </button>
@@ -193,10 +169,7 @@ function PasswordField({
           <div className="flex-1 h-1 rounded-full overflow-hidden surface-tertiary">
             <div
               className="h-full transition-all duration-300"
-              style={{
-                width: `${(strength?.score ?? 0) * 25}%`,
-                backgroundColor: strength?.color,
-              }}
+              style={{ width: `${(strength?.score ?? 0) * 25}%`, backgroundColor: strength?.color }}
             />
           </div>
           <span className="text-[11px] font-medium" style={{ color: strength?.color }}>
@@ -217,9 +190,7 @@ function DangerZoneCard({ onLogout }: { onLogout: () => void }) {
     <section className="rounded-2xl border border-error/30 surface-card p-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h3 className="text-sm font-semibold font-heading text-heading">
-            {t('logout')}
-          </h3>
+          <h3 className="text-sm font-semibold font-heading text-heading">{t('logout')}</h3>
           <p className="text-xs text-body mt-0.5">{t('logoutSubtitle')}</p>
         </div>
         <button
@@ -234,11 +205,7 @@ function DangerZoneCard({ onLogout }: { onLogout: () => void }) {
   );
 }
 
-function computeStrength(pwd: string): {
-  score: number;
-  label: string;
-  color: string;
-} {
+function computeStrength(pwd: string): { score: number; label: string; color: string } {
   let score = 0;
   if (pwd.length >= 8) score++;
   if (pwd.length >= 12) score++;

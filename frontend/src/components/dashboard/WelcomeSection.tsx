@@ -49,16 +49,14 @@ export default function WelcomeSection({
   return (
     <div className="mb-10">
       {/* Hero area with decorative gradient */}
-      <div className="relative overflow-hidden rounded-3xl px-6 py-12 sm:py-16 mb-0">
+      <div className="relative rounded-3xl px-6 py-12 sm:py-16 mb-0">
         {/* Decorative gradient blur blobs */}
-        <div className="absolute inset-0 -z-10 overflow-hidden">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] rounded-full bg-primary/8 blur-[100px]" />
-          <div className="absolute top-1/3 left-1/3 w-[200px] h-[200px] rounded-full bg-primary/5 blur-[80px]" />
-          <div className="absolute bottom-0 right-1/4 w-[250px] h-[150px] rounded-full bg-blue-400/5 blur-[80px]" />
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[150px] rounded-full bg-primary/10 blur-[100px]" />
         </div>
 
         {/* Centered greeting */}
-        <div className="flex flex-col items-center text-center">
+        <div className="flex flex-col items-center text-center mt-8">
           {/* Gear icon */}
           <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4">
             <Image
@@ -96,7 +94,7 @@ export default function WelcomeSection({
             </div>
 
             {/* URL input */}
-            <div className="flex items-center gap-3 px-4 py-3.5">
+            <div className="flex items-center gap-3 px-4 py-3">
               <Globe size={18} className="text-muted flex-shrink-0" />
               <input
                 type="url"
@@ -118,7 +116,7 @@ export default function WelcomeSection({
         </form>
 
         {/* Hint text */}
-        <p className="mt-4 text-xs text-center text-content-secondary">{t("urlHint")}</p>
+        <p className="mt-4 text-xs text-center text-content-tertiary">{t("urlHint")}</p>
       </div>
     </div>
   );

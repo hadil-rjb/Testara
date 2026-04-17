@@ -18,7 +18,7 @@ export default function WorkspaceTopBar({
 
   return (
     <header
-      className="flex items-center justify-between px-6 py-3 border-b border-theme flex-shrink-0"
+      className="flex items-center justify-between px-6 py-3 h-16 border-b border-theme flex-shrink-0"
       style={{ backgroundColor: 'var(--bg-primary)' }}
     >
       {/* Project name dropdown */}

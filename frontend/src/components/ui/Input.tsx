@@ -9,8 +9,10 @@ export interface InputProps
   leftIcon?: ReactNode;
   /** Icon or element rendered on the right (e.g. show/hide password). */
   rightSlot?: ReactNode;
-  /** Forces the error visual state. */
+  /** Forces the error visual state (red border + ring). */
   invalid?: boolean;
+  /** Forces the success visual state (green border + ring). */
+  valid?: boolean;
   inputSize?: InputSize;
 }
 
@@ -27,6 +29,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       leftIcon,
       rightSlot,
       invalid,
+      valid,
       inputSize = 'md',
       type = 'text',
       disabled,
@@ -34,14 +37,18 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     },
     ref,
   ) => {
+    const borderCls = invalid
+      ? 'border-error focus-within:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-error)_25%,transparent)]'
+      : valid
+      ? 'border-[var(--alert-success-text)] focus-within:shadow-[0_0_0_3px_color-mix(in_srgb,var(--alert-success-text)_20%,transparent)]'
+      : 'border-theme focus-within:border-primary focus-within:shadow-focus-ring';
+
     return (
       <div
         className={cn(
           'flex items-center gap-2.5 rounded-xl border surface-input transition-[border-color,box-shadow] duration-150',
           sizes[inputSize],
-          invalid
-            ? 'border-error focus-within:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-error)_25%,transparent)]'
-            : 'border-theme focus-within:border-primary focus-within:shadow-focus-ring',
+          borderCls,
           disabled && 'opacity-60 cursor-not-allowed',
           className,
         )}

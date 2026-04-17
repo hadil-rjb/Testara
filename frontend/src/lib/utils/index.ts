@@ -6,3 +6,4 @@ export {
   formatBytes,
   truncate,
 } from './format';
+export { getApiError } from './errors';

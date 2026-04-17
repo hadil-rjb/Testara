@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { AlertTriangle } from 'lucide-react';
+import { Button } from '@/components/ui';
 import Modal from './Modal';
 
 interface ConfirmDialogProps {
@@ -61,26 +62,23 @@ export default function ConfirmDialog({
         </div>
 
         <div className="flex items-center justify-end gap-2 mt-6">
-          <button
+          <Button
             type="button"
+            variant="ghost"
             onClick={onCancel}
             disabled={busy}
-            className="px-4 py-2.5 rounded-xl text-sm font-medium text-body transition-colors hover:surface-tertiary"
           >
             {cancelLabel}
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
-            onClick={handleConfirm}
+            variant={destructive ? 'danger' : 'primary'}
+            loading={busy}
             disabled={busy}
-            className={`px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-              destructive
-                ? 'bg-error hover:opacity-90'
-                : 'bg-primary hover:bg-primary-dark'
-            }`}
+            onClick={handleConfirm}
           >
-            {busy ? '...' : confirmLabel}
-          </button>
+            {confirmLabel}
+          </Button>
         </div>
       </div>
     </Modal>

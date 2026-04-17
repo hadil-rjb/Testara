@@ -6,8 +6,12 @@
     "back": "Retour",
     "or": "Ou",
     "seeMore": "Voir Plus",
-    "search": "Search for projets...",
-    "loading": "Chargement..."
+    "search": "Rechercher des projets...",
+    "loading": "Chargement...",
+    "errors": {
+      "generic": "Une erreur s'est produite. Veuillez réessayer."
+    },
+    "langUpdateFailed": "Impossible de mettre à jour la préférence de langue. Veuillez réessayer."
   },
   "nav": {
     "features": "Fonctionnalités",
@@ -16,7 +20,8 @@
     "faq": "FAQ",
     "pricing": "Structure",
     "signUp": "S'inscrire",
-    "login": "Se Connecter"
+    "login": "Se Connecter",
+    "dashboard": "Tableau de bord"
   },
   "hero": {
     "badge": "Automatisation QA alimentées par l'IA",
@@ -118,7 +123,7 @@
     "welcomeBack": "Bienvenue à Testara",
     "email": "Adresse e-mail",
     "emailPlaceholder": "exemple@email.com",
-    "password": "Mot de passe",
+    "passwordd": "Mot de passe",
     "passwordPlaceholder": "8 caractères minimum",
     "forgotPassword": "Mot de passe oublié?",
     "login": "Se connecter",
@@ -148,17 +153,50 @@
     "resetPasswordDesc": "Entrez votre nouveau mot de passe.",
     "newPassword": "Nouveau mot de passe",
     "confirmPassword": "Confirmer le mot de passe",
-    "resetPassword": "Réinitialiser"
+    "resetPassword": "Réinitialiser",
+    "validation": {
+      "emailRequired": "L'adresse e-mail est requise",
+      "emailInvalid": "Veuillez saisir une adresse e-mail valide",
+      "passwordRequired": "Le mot de passe est requis",
+      "passwordTooShort": "Le mot de passe doit comporter au moins {min} caractères",
+      "firstNameRequired": "Le prénom est requis",
+      "lastNameRequired": "Le nom est requis",
+      "confirmPasswordRequired": "Veuillez confirmer votre mot de passe",
+      "passwordMismatch": "Les mots de passe ne correspondent pas",
+      "passwordsMatch": "Les mots de passe correspondent",
+      "invalidResetLink": "Lien invalide ou expiré. Veuillez en demander un nouveau."
+    },
+    "password": {
+      "strength": "Force du mot de passe",
+      "weak": "Faible",
+      "fair": "Passable",
+      "good": "Bon",
+      "strong": "Fort"
+    },
+    "errors": {
+      "loginFailed": "Connexion échouée. Vérifiez vos identifiants.",
+      "registrationFailed": "Inscription échouée. Veuillez réessayer.",
+      "forgotFailed": "Une erreur s'est produite. Veuillez réessayer.",
+      "resetFailed": "Une erreur s'est produite. Veuillez réessayer."
+    },
+    "aria": {
+      "showPassword": "Afficher le mot de passe",
+      "hidePassword": "Masquer le mot de passe"
+    },
+    "forgot": {
+      "checkInboxTitle": "Vérifiez votre boîte de réception",
+      "checkInboxDesc": "Un lien de réinitialisation a été envoyé à {email}. Il expire dans 15 minutes."
+    }
   },
   "dashboard": {
     "hello": "Bonjour",
-    "newProject": "Nouvelle Projet",
-    "projects": "Projects",
-    "reports": "Reports",
-    "team": "Team",
+    "newProject": "Nouveau projet",
+    "projects": "Projets",
+    "reports": "Rapports",
+    "team": "Équipe",
     "settings": "Paramètres",
     "recentProjects": "Vos récents projets",
-    "projectName": "Project Name",
+    "projectName": "Nom du projet",
     "urlPlaceholder": "https://example.com",
     "urlHint": "Entrez une URL et sélectionnez les types de tests pour commencer l'analyse IA",
     "passed": "réussis",
@@ -171,10 +209,10 @@
     }
   },
   "projects": {
-    "title": "Projects",
+    "title": "Projets",
     "subtitle": "Gérez et collaborez au sein des équipes de votre organisation.",
-    "addProject": "Ajouter Projet",
-    "export": "Export",
+    "addProject": "Ajouter un projet",
+    "export": "Exporter",
     "search": "Recherche...",
     "filter": "Filtre",
     "sortBy": "Trier par",
@@ -211,6 +249,18 @@
       "range_month": "30 derniers jours",
       "apply": "Appliquer",
       "reset": "Réinitialiser"
+    },
+    "feedback": {
+      "fetchFailed": "Impossible de charger les projets. Vérifiez votre connexion et réessayez.",
+      "retry": "Réessayer",
+      "projectDeleted": "« {name} » supprimé",
+      "projectRenamed": "Projet renommé",
+      "deleteFailed": "Impossible de supprimer le projet. Veuillez réessayer.",
+      "renameFailed": "Impossible de renommer le projet. Veuillez réessayer.",
+      "createFailed": "Impossible de créer le projet. Veuillez réessayer.",
+      "nameRequired": "Le nom du projet est requis",
+      "urlRequired": "L'URL est requise",
+      "urlInvalid": "Veuillez saisir une URL valide commençant par http:// ou https://"
     }
   },
   "settings": {

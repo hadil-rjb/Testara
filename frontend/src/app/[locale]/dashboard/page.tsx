@@ -65,7 +65,7 @@ export default function DashboardPage() {
             <ChevronDown size={18} className="text-muted" />
           </button>
           <Link
-            href="/dashboard"
+            href="/dashboard/projects"
             className="flex items-center gap-1.5 text-sm font-medium text-primary hover:underline transition-colors"
           >
             {tc('seeMore')}

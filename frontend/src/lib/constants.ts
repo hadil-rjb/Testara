@@ -11,6 +11,7 @@ export const STORAGE_KEYS = {
   accessToken: 'accessToken',
   refreshToken: 'refreshToken',
   theme: 'theme',
+  recentProjectActivity: 'recentProjectActivity',
 } as const;
 
 /** App routes used from non-Link places (interceptors, redirects). */

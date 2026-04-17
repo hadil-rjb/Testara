@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Link, usePathname, useRouter } from "@/i18n/routing";
-import { Menu, X, Sun, Moon, ChevronDown } from "lucide-react";
+import { Menu, X, Sun, Moon, ChevronDown, LayoutDashboard } from "lucide-react";
 import { useTheme } from "@/components/providers";
+import { useAuthStore } from "@/stores/auth-store";
 import Image from "next/image";
 
 export default function Navbar() {
@@ -14,9 +15,15 @@ export default function Navbar() {
   const router = useRouter();
   const { theme, toggleTheme } = useTheme();
 
+  const { isAuthenticated, user } = useAuthStore();
+
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
+
+  const userInitials = user
+    ? `${user.firstName?.charAt(0) ?? ""}${user.lastName?.charAt(0) ?? ""}`.toUpperCase()
+    : "";
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 80);
@@ -116,21 +123,32 @@ export default function Navbar() {
         )}
       </div>
 
-      {/* Sign Up link */}
-      <Link
-        href="/auth/register"
-        className="hidden text-sm font-medium text-heading transition-colors hover:text-primary lg:block"
-      >
-        {t("signUp")}
-      </Link>
+      {isAuthenticated ? (
+        <>
+          {/* User avatar */}
+          <Link href="/dashboard" className="hidden h-9 w-9 items-center justify-center rounded-full bg-primary/15 text-sm font-bold text-primary ring-2 ring-primary/30 lg:flex">
+            {userInitials || <LayoutDashboard className="h-4 w-4" />}
+          </Link>
+        </>
+      ) : (
+        <>
+          {/* Sign Up link */}
+          <Link
+            href="/auth/register"
+            className="hidden text-sm font-medium text-heading transition-colors hover:text-primary lg:block"
+          >
+            {t("signUp")}
+          </Link>
 
-      {/* Login button */}
-      <Link
-        href="/auth/login"
-        className="hidden items-center rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white transition-all hover:bg-primary-dark hover:shadow-md lg:inline-flex"
-      >
-        {t("login")}
-      </Link>
+          {/* Login button */}
+          <Link
+            href="/auth/login"
+            className="hidden items-center rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white transition-all hover:bg-primary-dark hover:shadow-md lg:inline-flex"
+          >
+            {t("login")}
+          </Link>
+        </>
+      )}
     </div>
   );
 
@@ -323,21 +341,31 @@ export default function Navbar() {
 
             {/* RIGHT SIDE */}
             <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-              <Link
-                href="/auth/register"
-                className="text-sm font-medium text-heading whitespace-nowrap"
-                onClick={() => setMobileOpen(false)}
-              >
-                {t("signUp")}
-              </Link>
+              {isAuthenticated ? (
+                <>
+                  <Link href="/dashboard" className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/15 text-sm font-bold text-primary ring-2 ring-primary/30">
+                    {userInitials || <LayoutDashboard className="h-4 w-4" />}
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/auth/register"
+                    className="text-sm font-medium text-heading whitespace-nowrap"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    {t("signUp")}
+                  </Link>
 
-              <Link
-                href="/auth/login"
-                className="rounded-full bg-primary px-4 sm:px-5 py-2 text-sm font-semibold text-white whitespace-nowrap"
-                onClick={() => setMobileOpen(false)}
-              >
-                {t("login")}
-              </Link>
+                  <Link
+                    href="/auth/login"
+                    className="rounded-full bg-primary px-4 sm:px-5 py-2 text-sm font-semibold text-white whitespace-nowrap"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    {t("login")}
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>

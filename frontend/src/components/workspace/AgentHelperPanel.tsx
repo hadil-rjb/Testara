@@ -144,7 +144,7 @@ export default function AgentHelperPanel() {
       />
 
       {/* ================= HEADER ================= */}
-      <div className="flex items-center gap-3 px-5 py-4 border-b border-theme">
+      <div className="flex items-center gap-3 px-5 py-4 h-16 border-b border-theme">
         <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
           <Sparkles size={17} className="text-primary" />
         </div>

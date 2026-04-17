@@ -4,89 +4,119 @@ import { useState, FormEvent } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { authApi } from '@/lib/api';
-import AuthInput from '@/components/auth/AuthInput';
+import { Button, FormField, Input, Alert } from '@/components/ui';
+import { Mail, ArrowLeft } from 'lucide-react';
+import { getApiError } from '@/lib/utils';
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function ForgotPasswordPage() {
   const t = useTranslations('auth');
   const tc = useTranslations('common');
 
   const [email, setEmail] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [emailError, setEmailError] = useState('');
+  const [emailTouched, setEmailTouched] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
 
+  const validateEmail = (v: string) => {
+    if (!v) return t('validation.emailRequired');
+    if (!EMAIL_RE.test(v)) return t('validation.emailInvalid');
+    return '';
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    const err = validateEmail(email);
+    setEmailError(err);
+    setEmailTouched(true);
+    if (err) return;
+
     setError('');
-    setIsSubmitting(true);
+    setSubmitting(true);
     try {
       await authApi.forgotPassword(email);
       setSuccess(true);
     } catch (err) {
-      const message =
-        (err as { response?: { data?: { message?: string } } })?.response?.data
-          ?.message ?? 'Something went wrong';
-      setError(message);
+      setError(getApiError(err, t('errors.forgotFailed')));
     } finally {
-      setIsSubmitting(false);
+      setSubmitting(false);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-auth-gradient">
       <div className="w-full max-w-md rounded-3xl p-8 shadow-lg surface-card">
-        {/* Key Icon */}
+        {/* Icon */}
         <div className="flex justify-center mb-6">
           <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-            </svg>
+            <Mail size={26} className="text-white" />
           </div>
         </div>
 
         <h1 className="text-2xl font-bold font-heading text-center mb-2 text-heading">
           {t('forgotPasswordTitle')}
         </h1>
-        <p className="text-sm text-center mb-8 text-body">
-          {t('forgotPasswordDesc')}
-        </p>
+        <p className="text-sm text-center mb-8 text-body">{t('forgotPasswordDesc')}</p>
 
         {error && (
-          <div className="mb-4 p-3 rounded-xl alert-error text-sm text-center">
+          <Alert variant="error" className="mb-5" onDismiss={() => setError('')}>
             {error}
-          </div>
+          </Alert>
         )}
 
         {success ? (
-          <div className="p-4 rounded-xl alert-success text-sm text-center">
-            A reset link has been sent to your email.
-          </div>
+          <Alert variant="success" title={t('forgot.checkInboxTitle')}>
+            {t('forgot.checkInboxDesc', { email })}
+          </Alert>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <AuthInput
+          <form onSubmit={handleSubmit} noValidate className="space-y-5">
+            <FormField
               label={t('email')}
-              type="email"
-              placeholder={t('emailPlaceholder')}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full py-3 rounded-2xl bg-primary text-white font-semibold text-sm hover:bg-primary-dark transition-colors disabled:opacity-60"
+              error={emailTouched ? emailError : undefined}
             >
-              {isSubmitting ? '...' : t('sendResetLink')}
-            </button>
+              {({ id, invalid }) => (
+                <Input
+                  id={id}
+                  type="email"
+                  placeholder={t('emailPlaceholder')}
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (emailTouched) setEmailError(validateEmail(e.target.value));
+                  }}
+                  onBlur={() => {
+                    setEmailTouched(true);
+                    setEmailError(validateEmail(email));
+                  }}
+                  invalid={invalid}
+                  leftIcon={<Mail size={16} />}
+                  autoComplete="email"
+                />
+              )}
+            </FormField>
+
+            <Button
+              type="submit"
+              block
+              size="lg"
+              loading={submitting}
+              disabled={submitting}
+              className="rounded-2xl"
+            >
+              {t('sendResetLink')}
+            </Button>
           </form>
         )}
 
         <div className="mt-8 text-center">
-          <Link href="/auth/login" className="text-sm text-primary hover:underline flex items-center justify-center gap-1">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
+          <Link
+            href="/auth/login"
+            className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
+          >
+            <ArrowLeft size={14} />
             {tc('back')}
           </Link>
         </div>

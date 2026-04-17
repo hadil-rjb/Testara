@@ -3,18 +3,18 @@
 import { useRef, useState, ChangeEvent, FormEvent } from 'react';
 import { useTranslations } from 'next-intl';
 import { useAuthStore } from '@/stores/auth-store';
+import { useToast } from '@/hooks/useToast';
+import { Button } from '@/components/ui';
 import { Camera, Trash2, Save, Mail, User } from 'lucide-react';
+import { getApiError } from '@/lib/utils';
 
-const MAX_AVATAR_BYTES = 2 * 1024 * 1024; // 2MB
+const MAX_AVATAR_BYTES = 2 * 1024 * 1024; // 2 MB
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
-interface ProfileTabProps {
-  onToast: (kind: 'success' | 'error', message: string) => void;
-}
-
-export default function ProfileTab({ onToast }: ProfileTabProps) {
+export default function ProfileTab() {
   const t = useTranslations('settings.profile');
   const { user, updateProfile } = useAuthStore();
+  const toast = useToast();
 
   const [firstName, setFirstName] = useState(user?.firstName ?? '');
   const [lastName, setLastName] = useState(user?.lastName ?? '');
@@ -30,11 +30,11 @@ export default function ProfileTab({ onToast }: ProfileTabProps) {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!ACCEPTED_TYPES.includes(file.type)) {
-      onToast('error', t('invalidImage'));
+      toast.error(t('invalidImage'));
       return;
     }
     if (file.size > MAX_AVATAR_BYTES) {
-      onToast('error', t('avatarTooLarge'));
+      toast.error(t('avatarTooLarge'));
       return;
     }
     const dataUrl = await fileToDataUrl(file);
@@ -53,12 +53,9 @@ export default function ProfileTab({ onToast }: ProfileTabProps) {
         email: email.trim().toLowerCase(),
         avatar: avatar ?? '',
       });
-      onToast('success', t('saved'));
-    } catch (err: unknown) {
-      const msg =
-        (err as { response?: { data?: { message?: string } } }).response?.data
-          ?.message || 'Error';
-      onToast('error', msg);
+      toast.success(t('saved'));
+    } catch (err) {
+      toast.error(getApiError(err));
     } finally {
       setSaving(false);
     }
@@ -131,20 +128,8 @@ export default function ProfileTab({ onToast }: ProfileTabProps) {
         <p className="text-sm text-body mb-5">{t('subtitle')}</p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Field
-            icon={User}
-            label={t('firstName')}
-            value={firstName}
-            onChange={setFirstName}
-            required
-          />
-          <Field
-            icon={User}
-            label={t('lastName')}
-            value={lastName}
-            onChange={setLastName}
-            required
-          />
+          <Field icon={User} label={t('firstName')} value={firstName} onChange={setFirstName} />
+          <Field icon={User} label={t('lastName')} value={lastName} onChange={setLastName} />
           <div className="sm:col-span-2">
             <Field
               icon={Mail}
@@ -152,7 +137,6 @@ export default function ProfileTab({ onToast }: ProfileTabProps) {
               type="email"
               value={email}
               onChange={setEmail}
-              required
               hint={t('emailHint')}
             />
           </div>
@@ -161,18 +145,14 @@ export default function ProfileTab({ onToast }: ProfileTabProps) {
 
       {/* Save */}
       <div className="flex justify-end">
-        <button
+        <Button
           type="submit"
+          loading={saving}
           disabled={saving || !dirty}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white text-sm font-semibold transition-colors hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed"
+          leftIcon={!saving ? <Save size={15} /> : undefined}
         >
-          {saving ? (
-            <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-          ) : (
-            <Save size={15} />
-          )}
           {t('save')}
-        </button>
+        </Button>
       </div>
     </form>
   );
@@ -188,20 +168,10 @@ interface FieldProps {
   hint?: string;
 }
 
-function Field({
-  icon: Icon,
-  label,
-  value,
-  onChange,
-  type = 'text',
-  required,
-  hint,
-}: FieldProps) {
+function Field({ icon: Icon, label, value, onChange, type = 'text', required, hint }: FieldProps) {
   return (
     <div>
-      <label className="block text-xs font-semibold text-heading mb-1.5">
-        {label}
-      </label>
+      <label className="block text-xs font-semibold text-heading mb-1.5">{label}</label>
       <div className="flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 border border-theme surface-input transition-all focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
         <Icon size={16} className="text-muted flex-shrink-0" />
         <input

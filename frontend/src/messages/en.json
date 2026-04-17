@@ -7,7 +7,11 @@
     "or": "Or",
     "seeMore": "See More",
     "search": "Search for projects...",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "errors": {
+      "generic": "Something went wrong. Please try again."
+    },
+    "langUpdateFailed": "Could not update language preference. Please try again."
   },
   "nav": {
     "features": "Features",
@@ -16,7 +20,8 @@
     "faq": "FAQ",
     "pricing": "Pricing",
     "signUp": "Sign Up",
-    "login": "Sign In"
+    "login": "Sign In",
+    "dashboard": "Dashboard"
   },
   "hero": {
     "badge": "AI-Powered QA Automation",
@@ -118,7 +123,7 @@
     "welcomeBack": "Welcome to Testara",
     "email": "Email Address",
     "emailPlaceholder": "example@email.com",
-    "password": "Password",
+    "passwordd": "Password",
     "passwordPlaceholder": "8 characters minimum",
     "forgotPassword": "Forgot password?",
     "login": "Sign in",
@@ -148,7 +153,40 @@
     "resetPasswordDesc": "Enter your new password.",
     "newPassword": "New Password",
     "confirmPassword": "Confirm Password",
-    "resetPassword": "Reset"
+    "resetPassword": "Reset",
+    "validation": {
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email address",
+      "passwordRequired": "Password is required",
+      "passwordTooShort": "Password must be at least {min} characters",
+      "firstNameRequired": "First name is required",
+      "lastNameRequired": "Last name is required",
+      "confirmPasswordRequired": "Please confirm your password",
+      "passwordMismatch": "Passwords do not match",
+      "passwordsMatch": "Passwords match",
+      "invalidResetLink": "Invalid or expired reset link. Please request a new one."
+    },
+    "password": {
+      "strength": "Password strength",
+      "weak": "Weak",
+      "fair": "Fair",
+      "good": "Good",
+      "strong": "Strong"
+    },
+    "errors": {
+      "loginFailed": "Login failed. Please check your credentials.",
+      "registrationFailed": "Registration failed. Please try again.",
+      "forgotFailed": "Something went wrong. Please try again.",
+      "resetFailed": "Something went wrong. Please try again."
+    },
+    "aria": {
+      "showPassword": "Show password",
+      "hidePassword": "Hide password"
+    },
+    "forgot": {
+      "checkInboxTitle": "Check your inbox",
+      "checkInboxDesc": "A reset link has been sent to {email}. It expires in 15 minutes."
+    }
   },
   "dashboard": {
     "hello": "Hello",
@@ -211,6 +249,18 @@
       "range_month": "Last 30 days",
       "apply": "Apply",
       "reset": "Reset"
+    },
+    "feedback": {
+      "fetchFailed": "Could not load projects. Check your connection and try again.",
+      "retry": "Retry",
+      "projectDeleted": "\"{name}\" deleted",
+      "projectRenamed": "Project renamed",
+      "deleteFailed": "Failed to delete project. Please try again.",
+      "renameFailed": "Failed to rename project. Please try again.",
+      "createFailed": "Could not create project. Please try again.",
+      "nameRequired": "Project name is required",
+      "urlRequired": "URL is required",
+      "urlInvalid": "Please enter a valid URL starting with http:// or https://"
     }
   },
   "settings": {

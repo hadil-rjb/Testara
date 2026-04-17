@@ -5,7 +5,10 @@ import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from '@/i18n/routing';
 import { authApi } from '@/lib/api';
-import AuthInput from '@/components/auth/AuthInput';
+import { Button, FormField, Input, Alert } from '@/components/ui';
+import { Lock, Eye, EyeOff } from 'lucide-react';
+import { getApiError } from '@/lib/utils';
+import { PASSWORD_MIN_LENGTH } from '@/lib/constants';
 
 export default function ResetPasswordPage() {
   const t = useTranslations('auth');
@@ -15,83 +18,161 @@ export default function ResetPasswordPage() {
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  const [fieldErrors, setFieldErrors] = useState({ password: '', confirmPassword: '' });
+  const [touched, setTouched] = useState({ password: false, confirmPassword: false });
+
+  const validatePassword = (v: string) => {
+    if (!v) return t('validation.passwordRequired');
+    if (v.length < PASSWORD_MIN_LENGTH) return t('validation.passwordTooShort', { min: PASSWORD_MIN_LENGTH });
+    return '';
+  };
+  const validateConfirm = (v: string, pw: string) => {
+    if (!v) return t('validation.confirmPasswordRequired');
+    if (v !== pw) return t('validation.passwordMismatch');
+    return '';
+  };
+
+  const handleBlur = (field: 'password' | 'confirmPassword') => {
+    setTouched((t) => ({ ...t, [field]: true }));
+    if (field === 'password') setFieldErrors((e) => ({ ...e, password: validatePassword(password) }));
+    else setFieldErrors((e) => ({ ...e, confirmPassword: validateConfirm(confirmPassword, password) }));
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError('');
+    const pwErr = validatePassword(password);
+    const cfErr = validateConfirm(confirmPassword, password);
+    setFieldErrors({ password: pwErr, confirmPassword: cfErr });
+    setTouched({ password: true, confirmPassword: true });
+    if (pwErr || cfErr) return;
 
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
+    if (!token) {
+      setError(t('validation.invalidResetLink'));
       return;
     }
 
-    setIsSubmitting(true);
+    setError('');
+    setSubmitting(true);
     try {
       await authApi.resetPassword(token, password);
       router.push('/auth/login');
     } catch (err) {
-      const message =
-        (err as { response?: { data?: { message?: string } } })?.response?.data
-          ?.message ?? 'Something went wrong';
-      setError(message);
+      setError(getApiError(err, t('errors.resetFailed')));
     } finally {
-      setIsSubmitting(false);
+      setSubmitting(false);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-auth-gradient">
       <div className="w-full max-w-md rounded-3xl p-8 shadow-lg surface-card">
-        {/* Lock Icon */}
+        {/* Icon */}
         <div className="flex justify-center mb-6">
           <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
+            <Lock size={26} className="text-white" />
           </div>
         </div>
 
         <h1 className="text-2xl font-bold font-heading text-center mb-2 text-heading">
           {t('resetPasswordTitle')}
         </h1>
-        <p className="text-sm text-center mb-8 text-body">
-          {t('resetPasswordDesc')}
-        </p>
+        <p className="text-sm text-center mb-8 text-body">{t('resetPasswordDesc')}</p>
 
         {error && (
-          <div className="mb-4 p-3 rounded-xl alert-error text-sm text-center">
+          <Alert variant="error" className="mb-5" onDismiss={() => setError('')}>
             {error}
-          </div>
+          </Alert>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <AuthInput
+        <form onSubmit={handleSubmit} noValidate className="space-y-5">
+          <FormField
             label={t('newPassword')}
-            type="password"
-            placeholder={t('passwordPlaceholder')}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-
-          <AuthInput
-            label={t('confirmPassword')}
-            type="password"
-            placeholder={t('passwordPlaceholder')}
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
-
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full py-3 rounded-2xl bg-primary text-white font-semibold text-sm hover:bg-primary-dark transition-colors disabled:opacity-60"
+            error={touched.password ? fieldErrors.password : undefined}
           >
-            {isSubmitting ? '...' : t('resetPassword')}
-          </button>
+            {({ id, invalid }) => (
+              <Input
+                id={id}
+                type={showPassword ? 'text' : 'password'}
+                placeholder={t('passwordPlaceholder')}
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (touched.password) setFieldErrors((fe) => ({ ...fe, password: validatePassword(e.target.value) }));
+                  if (touched.confirmPassword) setFieldErrors((fe) => ({ ...fe, confirmPassword: validateConfirm(confirmPassword, e.target.value) }));
+                }}
+                onBlur={() => handleBlur('password')}
+                invalid={invalid}
+                leftIcon={<Lock size={16} />}
+                autoComplete="new-password"
+                rightSlot={
+                  <button
+                    type="button"
+                    tabIndex={-1}
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="text-muted hover:text-heading transition-colors p-0.5"
+                    aria-label={showPassword ? t('aria.hidePassword') : t('aria.showPassword')}
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                }
+              />
+            )}
+          </FormField>
+
+          <FormField
+            label={t('confirmPassword')}
+            error={touched.confirmPassword ? fieldErrors.confirmPassword : undefined}
+            success={
+              touched.confirmPassword && !fieldErrors.confirmPassword && confirmPassword
+                ? t('validation.passwordsMatch')
+                : undefined
+            }
+          >
+            {({ id, invalid, valid }) => (
+              <Input
+                id={id}
+                type={showConfirm ? 'text' : 'password'}
+                placeholder={t('passwordPlaceholder')}
+                value={confirmPassword}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  if (touched.confirmPassword) setFieldErrors((fe) => ({ ...fe, confirmPassword: validateConfirm(e.target.value, password) }));
+                }}
+                onBlur={() => handleBlur('confirmPassword')}
+                invalid={invalid}
+                valid={valid}
+                leftIcon={<Lock size={16} />}
+                autoComplete="new-password"
+                rightSlot={
+                  <button
+                    type="button"
+                    tabIndex={-1}
+                    onClick={() => setShowConfirm((v) => !v)}
+                    className="text-muted hover:text-heading transition-colors p-0.5"
+                    aria-label={showConfirm ? 'Hide password' : 'Show password'}
+                  >
+                    {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                }
+              />
+            )}
+          </FormField>
+
+          <Button
+            type="submit"
+            block
+            size="lg"
+            loading={submitting}
+            disabled={submitting}
+            className="rounded-2xl"
+          >
+            {t('resetPassword')}
+          </Button>
         </form>
       </div>
     </div>

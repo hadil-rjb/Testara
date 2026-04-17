@@ -33,7 +33,11 @@ import {
   FileSpreadsheet,
   FileDown,
   X,
+  AlertCircle,
+  RefreshCw,
 } from 'lucide-react';
+import { useToast } from '@/hooks/useToast';
+import { getApiError } from '@/lib/utils';
 
 interface Project extends ExportableProject {
   _id: string;
@@ -53,6 +57,8 @@ export default function ProjectsIndexPage() {
 
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(false);
+  const toast = useToast();
 
   // filters, sort, search, pagination
   const [search, setSearch] = useState('');
@@ -95,10 +101,12 @@ export default function ProjectsIndexPage() {
   /* ───── fetch ───── */
   const fetchProjects = useCallback(async () => {
     setLoading(true);
+    setFetchError(false);
     try {
       const { data } = await projectApi.getAll();
       setProjects(Array.isArray(data) ? data : []);
     } catch {
+      setFetchError(true);
       setProjects([]);
     } finally {
       setLoading(false);
@@ -211,9 +219,10 @@ export default function ProjectsIndexPage() {
     try {
       await projectApi.delete(deleteTarget._id);
       setDeleteTarget(null);
+      toast.success(t('feedback.projectDeleted', { name: deleteTarget.name }));
       fetchProjects();
-    } catch {
-      /* silent */
+    } catch (err) {
+      toast.error(getApiError(err, t('feedback.deleteFailed')));
     }
   };
 
@@ -222,9 +231,10 @@ export default function ProjectsIndexPage() {
     try {
       await projectApi.update(renameTarget._id, { name: newName });
       setRenameTarget(null);
+      toast.success(t('feedback.projectRenamed'));
       fetchProjects();
-    } catch {
-      /* silent */
+    } catch (err) {
+      toast.error(getApiError(err, t('feedback.renameFailed')));
     }
   };
 
@@ -251,7 +261,7 @@ export default function ProjectsIndexPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-8xl mx-auto mt-8">
       {/* Page header */}
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
         <div>
@@ -443,6 +453,21 @@ export default function ProjectsIndexPage() {
               {t('clearAll')}
             </button>
           )}
+        </div>
+      )}
+
+      {/* Fetch error banner */}
+      {!loading && fetchError && (
+        <div className="flex items-center gap-3 rounded-xl border border-error/30 bg-error/5 px-4 py-3 mb-5 text-sm text-error">
+          <AlertCircle size={17} className="flex-shrink-0" />
+          <span className="flex-1">{t('feedback.fetchFailed')}</span>
+          <button
+            onClick={fetchProjects}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold hover:underline"
+          >
+            <RefreshCw size={13} />
+            {t('feedback.retry')}
+          </button>
         </div>
       )}
 
