@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import SettingsShell, { SettingsTab } from '@/components/settings/SettingsShell';
 import ProfileTab from '@/components/settings/ProfileTab';
+import AccountTab from '@/components/settings/AccountTab';
 import SecurityTab from '@/components/settings/SecurityTab';
 import PreferencesTab from '@/components/settings/PreferencesTab';
 
@@ -12,6 +13,7 @@ export default function SettingsPage() {
   return (
     <SettingsShell active={active} onChange={setActive}>
       {active === 'profile' && <ProfileTab />}
+      {active === 'account' && <AccountTab />}
       {active === 'security' && <SecurityTab />}
       {active === 'preferences' && <PreferencesTab />}
     </SettingsShell>

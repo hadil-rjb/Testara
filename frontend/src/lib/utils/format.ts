@@ -46,3 +46,29 @@ export function truncate(s: string, max = 48): string {
   if (!s) return '';
   return s.length > max ? `${s.slice(0, max - 1).trimEnd()}…` : s;
 }
+
+/**
+ * Lightweight relative time: "just now", "5m", "2h", "3d", "Apr 12".
+ * Stays dependency-free; the resulting string is locale-agnostic except
+ * for the eventual fallback date which is rendered via `Intl`.
+ */
+export function formatRelativeTime(
+  input?: string | number | Date | null,
+  locale: string = 'en',
+): string {
+  if (!input) return '';
+  const date = new Date(input);
+  if (Number.isNaN(date.getTime())) return '';
+
+  const diff = Math.max(0, Date.now() - date.getTime());
+  const sec = Math.floor(diff / 1000);
+  if (sec < 30) return 'now';
+  if (sec < 60) return `${sec}s`;
+  const min = Math.floor(sec / 60);
+  if (min < 60) return `${min}m`;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return `${hr}h`;
+  const day = Math.floor(hr / 24);
+  if (day < 7) return `${day}d`;
+  return date.toLocaleDateString(locale, { month: 'short', day: 'numeric' });
+}

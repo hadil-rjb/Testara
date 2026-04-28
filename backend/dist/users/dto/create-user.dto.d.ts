@@ -14,7 +14,16 @@ export declare class OnboardingDto {
 export declare class UpdateUserDto {
     firstName?: string;
     lastName?: string;
+    email?: string;
     themePreference?: string;
     languagePreference?: string;
     avatar?: string;
+}
+export declare class SwitchAccountTypeDto {
+    accountType: AccountType;
+    companyName?: string;
+}
+export declare class ChangePasswordDto {
+    currentPassword: string;
+    newPassword: string;
 }

@@ -61,6 +61,15 @@ export class UpdateUserDto {
   avatar?: string;
 }
 
+export class SwitchAccountTypeDto {
+  @IsEnum(AccountType)
+  accountType: AccountType;
+
+  @IsString()
+  @IsOptional()
+  companyName?: string;
+}
+
 export class ChangePasswordDto {
   @IsString()
   @IsNotEmpty()

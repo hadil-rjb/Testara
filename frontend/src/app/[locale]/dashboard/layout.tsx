@@ -32,11 +32,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="min-h-screen flex">
+    // h-screen + overflow-hidden gives us a fixed-height frame so the
+    // topbar (flex-shrink-0) stays pinned and only `main` scrolls.
+    <div className="h-screen flex overflow-hidden">
       <Sidebar />
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 h-screen">
         <TopBar />
-        <main className="flex-1 px-4 sm:px-6 lg:px-8 overflow-y-auto">
+        <main className="flex-1 px-4 sm:px-6 lg:px-8 pb-18 overflow-y-auto">
           {children}
         </main>
       </div>

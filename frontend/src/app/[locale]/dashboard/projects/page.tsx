@@ -43,15 +43,19 @@ interface Project extends ExportableProject {
   _id: string;
   name: string;
   url: string;
+  accessSource?: 'owner' | 'team' | 'member';
+  sharedViaTeam?: string;
 }
 
 type SortKey = 'newest' | 'oldest' | 'name';
+type ScopeKey = 'all' | 'owned' | 'shared';
 
 const PAGE_SIZE_OPTIONS = [6, 12, 24, 48];
 const DEFAULT_PAGE_SIZE = 6;
 
 export default function ProjectsIndexPage() {
   const t = useTranslations('projects');
+  const tDashboard = useTranslations('dashboard');
   const { user } = useAuthStore();
   const searchParams = useSearchParams();
 
@@ -63,6 +67,7 @@ export default function ProjectsIndexPage() {
   // filters, sort, search, pagination
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<SortKey>('newest');
+  const [scope, setScope] = useState<ScopeKey>('all');
   const [sortOpen, setSortOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
@@ -122,6 +127,25 @@ export default function ProjectsIndexPage() {
     if (searchParams.get('create') === '1') setNewOpen(true);
   }, [searchParams]);
 
+  /* ───── seed scope from query string (e.g. ?scope=shared) ───── */
+  useEffect(() => {
+    const value = searchParams.get('scope');
+    if (value === 'owned' || value === 'shared' || value === 'all') {
+      setScope(value);
+    }
+  }, [searchParams]);
+
+  /* ───── counts per scope (computed from raw projects, unaffected by filters) ───── */
+  const scopeCounts = useMemo(() => {
+    let owned = 0;
+    let shared = 0;
+    for (const p of projects) {
+      if (p.accessSource === 'owner' || !p.accessSource) owned += 1;
+      else shared += 1;
+    }
+    return { all: projects.length, owned, shared };
+  }, [projects]);
+
   /* ───── available filter options, derived ───── */
   const availableEnvironments = useMemo(() => {
     const set = new Set<string>();
@@ -150,12 +174,19 @@ export default function ProjectsIndexPage() {
       filters.dateRange === 'today'
         ? now - DAY
         : filters.dateRange === 'week'
-        ? now - DAY * 7
-        : filters.dateRange === 'month'
-        ? now - DAY * 30
-        : null;
+          ? now - DAY * 7
+          : filters.dateRange === 'month'
+            ? now - DAY * 30
+            : null;
 
     let list = projects.filter((p) => {
+      // Scope filter — owned vs shared
+      if (scope === 'owned' && p.accessSource && p.accessSource !== 'owner') {
+        return false;
+      }
+      if (scope === 'shared' && (p.accessSource === 'owner' || !p.accessSource)) {
+        return false;
+      }
       if (q && !p.name.toLowerCase().includes(q) && !p.url.toLowerCase().includes(q)) {
         return false;
       }
@@ -165,10 +196,7 @@ export default function ProjectsIndexPage() {
       ) {
         return false;
       }
-      if (
-        filters.statuses.length > 0 &&
-        !filters.statuses.includes(p.status || '')
-      ) {
+      if (filters.statuses.length > 0 && !filters.statuses.includes(p.status || '')) {
         return false;
       }
       if (threshold !== null) {
@@ -182,36 +210,31 @@ export default function ProjectsIndexPage() {
     if (sort === 'newest') {
       list.sort(
         (a, b) =>
-          new Date(b.createdAt || 0).getTime() -
-          new Date(a.createdAt || 0).getTime(),
+          new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime(),
       );
     } else if (sort === 'oldest') {
       list.sort(
         (a, b) =>
-          new Date(a.createdAt || 0).getTime() -
-          new Date(b.createdAt || 0).getTime(),
+          new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime(),
       );
     } else {
       list.sort((a, b) => a.name.localeCompare(b.name));
     }
     return list;
-  }, [projects, search, sort, filters]);
+  }, [projects, search, sort, filters, scope]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
   const safePage = Math.min(page, totalPages);
-  const pageItems = filtered.slice(
-    (safePage - 1) * perPage,
-    safePage * perPage,
-  );
+  const pageItems = filtered.slice((safePage - 1) * perPage, safePage * perPage);
 
   useEffect(() => {
     if (page > totalPages) setPage(totalPages);
   }, [totalPages, page]);
 
-  // Reset to page 1 when search/filter/perPage change
+  // Reset to page 1 when search/filter/perPage/scope change
   useEffect(() => {
     setPage(1);
-  }, [search, filters, perPage, sort]);
+  }, [search, filters, perPage, sort, scope]);
 
   /* ───── mutations ───── */
   const handleDelete = async () => {
@@ -265,9 +288,7 @@ export default function ProjectsIndexPage() {
       {/* Page header */}
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold font-heading text-heading">
-            {t('title')}
-          </h1>
+          <h1 className="text-2xl font-bold font-heading text-heading">{t('title')}</h1>
           <p className="text-sm text-body mt-1">{t('subtitle')}</p>
         </div>
 
@@ -281,7 +302,10 @@ export default function ProjectsIndexPage() {
             >
               <Upload size={15} />
               {t('export')}
-              <ChevronDown size={14} className={`transition-transform ${exportOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown
+                size={14}
+                className={`transition-transform ${exportOpen ? 'rotate-180' : ''}`}
+              />
             </button>
             {exportOpen && (
               <div className="absolute right-0 top-full mt-1 w-56 rounded-xl border border-theme surface-card shadow-lg z-20 overflow-hidden">
@@ -314,92 +338,120 @@ export default function ProjectsIndexPage() {
         </div>
       </div>
 
-      {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
-        <div className="flex-1 sm:max-w-xs">
-          <div className="flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 border border-theme surface-input transition-all focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
-            <Search size={16} className="text-muted" />
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder={t('search')}
-              className="flex-1 bg-transparent text-sm outline-none text-heading placeholder:text-[var(--text-tertiary)]"
-            />
-            {search && (
-              <button
-                onClick={() => setSearch('')}
-                className="p-0.5 rounded-md text-muted hover:text-heading transition-colors"
-              >
-                <X size={13} />
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Filter popover */}
-        <div className="relative" ref={filterWrapRef}>
-          <button
-            onClick={() => setFilterOpen((v) => !v)}
-            className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl border text-sm font-medium transition-colors ${
-              activeFilterCount > 0
-                ? 'border-primary text-primary bg-primary/5'
-                : 'border-theme text-body hover:surface-tertiary'
-            }`}
-          >
-            <SlidersHorizontal size={15} />
-            {t('filter')}
-            {activeFilterCount > 0 && (
-              <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-white text-[10px] font-bold">
-                {activeFilterCount}
-              </span>
-            )}
-          </button>
-          <FilterPopover
-            open={filterOpen}
-            onClose={() => setFilterOpen(false)}
-            filters={filters}
-            onChange={setFilters}
-            availableEnvironments={availableEnvironments}
-            availableStatuses={availableStatuses}
+      <div className="flex justify-between">
+        {/* Scope tabs — All / Owned / Shared */}
+        <div
+          role="tablist"
+          aria-label={t('title')}
+          className="flex items-center gap-1 p-1 mb-4 rounded-xl border border-theme w-fit"
+        >
+          <ScopeTab
+            active={scope === 'all'}
+            label={t('scopeAll')}
+            count={scopeCounts.all}
+            onClick={() => setScope('all')}
+          />
+          <ScopeTab
+            active={scope === 'owned'}
+            label={t('scopeOwned')}
+            count={scopeCounts.owned}
+            onClick={() => setScope('owned')}
+          />
+          <ScopeTab
+            active={scope === 'shared'}
+            label={t('scopeShared')}
+            count={scopeCounts.shared}
+            onClick={() => setScope('shared')}
           />
         </div>
 
-        {/* Sort */}
-        <div className="relative">
-          <button
-            onClick={() => setSortOpen((v) => !v)}
-            className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-theme text-sm font-medium text-body transition-colors hover:surface-tertiary"
-          >
-            <ArrowUpDown size={15} />
-            {t('sortBy')}: <span className="text-heading">{sortLabel}</span>
-            <ChevronDown size={14} className={`transition-transform ${sortOpen ? 'rotate-180' : ''}`} />
-          </button>
-          {sortOpen && (
-            <>
-              <div
-                className="fixed inset-0 z-10"
-                onClick={() => setSortOpen(false)}
+        {/* Toolbar */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
+          <div className="flex-1 sm:max-w-xs">
+            <div className="flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 border border-theme surface-input transition-all focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
+              <Search size={16} className="text-muted" />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder={t('search')}
+                className="flex-1 bg-transparent text-sm outline-none text-heading placeholder:text-[var(--text-tertiary)]"
               />
-              <div className="absolute right-0 top-full mt-1 w-44 rounded-xl border border-theme surface-card shadow-lg z-20 overflow-hidden">
-                {(['newest', 'oldest', 'name'] as SortKey[]).map((key) => (
-                  <button
-                    key={key}
-                    onClick={() => {
-                      setSort(key);
-                      setSortOpen(false);
-                    }}
-                    className={`flex w-full items-center px-3.5 py-2.5 text-sm transition-colors hover:surface-tertiary ${
-                      sort === key ? 'text-primary font-semibold' : 'text-body'
-                    }`}
-                  >
-                    {key === 'newest' && t('sortNewest')}
-                    {key === 'oldest' && t('sortOldest')}
-                    {key === 'name' && t('sortName')}
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
+              {search && (
+                <button
+                  onClick={() => setSearch('')}
+                  className="p-0.5 rounded-md text-muted hover:text-heading transition-colors"
+                >
+                  <X size={13} />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Filter popover */}
+          <div className="relative" ref={filterWrapRef}>
+            <button
+              onClick={() => setFilterOpen((v) => !v)}
+              className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl border text-sm font-medium transition-colors ${
+                activeFilterCount > 0
+                  ? 'border-primary text-primary bg-primary/5'
+                  : 'border-theme text-body hover:surface-tertiary'
+              }`}
+            >
+              <SlidersHorizontal size={15} />
+              {t('filter')}
+              {activeFilterCount > 0 && (
+                <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-white text-[10px] font-bold">
+                  {activeFilterCount}
+                </span>
+              )}
+            </button>
+            <FilterPopover
+              open={filterOpen}
+              onClose={() => setFilterOpen(false)}
+              filters={filters}
+              onChange={setFilters}
+              availableEnvironments={availableEnvironments}
+              availableStatuses={availableStatuses}
+            />
+          </div>
+
+          {/* Sort */}
+          <div className="relative">
+            <button
+              onClick={() => setSortOpen((v) => !v)}
+              className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-theme text-sm font-medium text-body transition-colors hover:surface-tertiary"
+            >
+              <ArrowUpDown size={15} />
+              {t('sortBy')}: <span className="text-heading">{sortLabel}</span>
+              <ChevronDown
+                size={14}
+                className={`transition-transform ${sortOpen ? 'rotate-180' : ''}`}
+              />
+            </button>
+            {sortOpen && (
+              <>
+                <div className="fixed inset-0 z-10" onClick={() => setSortOpen(false)} />
+                <div className="absolute right-0 top-full mt-1 w-44 rounded-xl border border-theme surface-card shadow-lg z-20 overflow-hidden">
+                  {(['newest', 'oldest', 'name'] as SortKey[]).map((key) => (
+                    <button
+                      key={key}
+                      onClick={() => {
+                        setSort(key);
+                        setSortOpen(false);
+                      }}
+                      className={`flex w-full items-center px-3.5 py-2.5 text-sm transition-colors hover:surface-tertiary ${
+                        sort === key ? 'text-primary font-semibold' : 'text-body'
+                      }`}
+                    >
+                      {key === 'newest' && t('sortNewest')}
+                      {key === 'oldest' && t('sortOldest')}
+                      {key === 'name' && t('sortName')}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
@@ -409,9 +461,7 @@ export default function ProjectsIndexPage() {
           <span className="text-muted">
             {t('totalResults', { count: filtered.length })}
           </span>
-          {search && (
-            <ChipTag label={`"${search}"`} onRemove={() => setSearch('')} />
-          )}
+          {search && <ChipTag label={`"${search}"`} onRemove={() => setSearch('')} />}
           {filters.environments.map((env) => (
             <ChipTag
               key={env}
@@ -501,12 +551,41 @@ export default function ProjectsIndexPage() {
                       ? `${project.owner.firstName?.charAt(0) || ''}${project.owner.lastName?.charAt(0) || ''}`
                       : ownerInitials
                   }
+                  accessSource={project.accessSource}
+                  sharedViaTeam={project.sharedViaTeam}
                   onRename={() => setRenameTarget(project)}
                   onDelete={() => setDeleteTarget(project)}
                 />
               </Link>
             </div>
           ))}
+        </div>
+      ) : scope === 'shared' ? (
+        <div className="rounded-2xl border border-theme surface-card p-16 text-center">
+          <div className="w-14 h-14 rounded-full surface-tertiary flex items-center justify-center mx-auto mb-4">
+            <FolderPlus size={22} className="text-muted" />
+          </div>
+          <p className="text-sm font-medium text-heading mb-1">
+            {tDashboard('noSharedProjects')}
+          </p>
+          <p className="text-xs text-body">{tDashboard('sharedProjectsSubtitle')}</p>
+        </div>
+      ) : scope === 'owned' && scopeCounts.owned === 0 ? (
+        <div className="rounded-2xl border border-theme surface-card p-16 text-center">
+          <div className="w-14 h-14 rounded-full surface-tertiary flex items-center justify-center mx-auto mb-4">
+            <FolderPlus size={22} className="text-muted" />
+          </div>
+          <p className="text-sm font-medium text-heading mb-1">
+            {tDashboard('noOwnedProjects')}
+          </p>
+          <p className="text-xs text-body mb-5">{t('emptySubtitle')}</p>
+          <button
+            onClick={() => setNewOpen(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white text-sm font-semibold transition-colors hover:bg-primary-dark"
+          >
+            <Plus size={15} />
+            {t('addProject')}
+          </button>
         </div>
       ) : (
         <div className="rounded-2xl border border-theme surface-card p-16 text-center">
@@ -593,13 +672,39 @@ function ExportItem({
   );
 }
 
-function ChipTag({
+function ScopeTab({
+  active,
   label,
-  onRemove,
+  count,
+  onClick,
 }: {
+  active: boolean;
   label: string;
-  onRemove: () => void;
+  count: number;
+  onClick: () => void;
 }) {
+  return (
+    <button
+      role="tab"
+      aria-selected={active}
+      onClick={onClick}
+      className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+        active ? 'bg-primary text-white shadow-sm' : 'text-body hover:text-heading'
+      }`}
+    >
+      {label}
+      <span
+        className={`inline-flex items-center justify-center min-w-[20px] h-[18px] px-1 rounded-full text-[10px] font-bold ${
+          active ? 'bg-white/25 text-white' : 'bg-primary/10 text-primary'
+        }`}
+      >
+        {count}
+      </span>
+    </button>
+  );
+}
+
+function ChipTag({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
     <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
       {label}
@@ -687,9 +792,7 @@ function Pagination({
               key={p}
               onClick={() => go(p)}
               className={`${btn} font-medium ${
-                p === page
-                  ? 'bg-primary text-white'
-                  : 'text-body hover:surface-tertiary'
+                p === page ? 'bg-primary text-white' : 'text-body hover:surface-tertiary'
               }`}
             >
               {p}
@@ -721,14 +824,14 @@ function Pagination({
         >
           <span className="text-heading font-medium">{perPage}</span>
           <span className="text-muted">{perPageLabel}</span>
-          <ChevronDown size={13} className={`text-muted transition-transform ${perPageOpen ? 'rotate-180' : ''}`} />
+          <ChevronDown
+            size={13}
+            className={`text-muted transition-transform ${perPageOpen ? 'rotate-180' : ''}`}
+          />
         </button>
         {perPageOpen && (
           <>
-            <div
-              className="fixed inset-0 z-10"
-              onClick={togglePerPage}
-            />
+            <div className="fixed inset-0 z-10" onClick={togglePerPage} />
             <div className="absolute right-0 bottom-full mb-1 w-28 rounded-xl border border-theme surface-card shadow-lg z-20 overflow-hidden">
               {PAGE_SIZE_OPTIONS.map((n) => (
                 <button

@@ -36,6 +36,14 @@ let UsersController = class UsersController {
         const { password, resetPasswordToken, resetPasswordExpires, ...result } = user.toObject();
         return result;
     }
+    async switchAccountType(req, dto) {
+        const user = await this.usersService.switchAccountType(req.user.userId, dto);
+        const { password, resetPasswordToken, resetPasswordExpires, ...result } = user.toObject();
+        return result;
+    }
+    async changePassword(req, dto) {
+        await this.usersService.changePassword(req.user.userId, dto);
+    }
 };
 exports.UsersController = UsersController;
 __decorate([
@@ -64,6 +72,25 @@ __decorate([
     __metadata("design:paramtypes", [Object, create_user_dto_1.OnboardingDto]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "completeOnboarding", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Put)('me/account-type'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, create_user_dto_1.SwitchAccountTypeDto]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "switchAccountType", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Post)('me/change-password'),
+    (0, common_1.HttpCode)(204),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, create_user_dto_1.ChangePasswordDto]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "changePassword", null);
 exports.UsersController = UsersController = __decorate([
     (0, common_1.Controller)('users'),
     __metadata("design:paramtypes", [users_service_1.UsersService])

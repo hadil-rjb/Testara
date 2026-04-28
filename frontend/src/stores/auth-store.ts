@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { authApi, userApi, type UpdateProfileData, type RegisterPayload } from '@/lib/api';
+import { authApi, userApi, type UpdateProfileData, type RegisterPayload, type SwitchAccountTypeData } from '@/lib/api';
 import { STORAGE_KEYS } from '@/lib/constants';
 import type { User } from '@/types';
 
@@ -15,6 +15,7 @@ interface AuthState {
     companyName?: string;
   }) => Promise<User>;
   updateProfile: (data: UpdateProfileData) => Promise<User>;
+  switchAccountType: (data: SwitchAccountTypeData) => Promise<User>;
   logout: () => void;
   fetchUser: () => Promise<void>;
   setTokens: (accessToken: string, refreshToken: string) => void;
@@ -51,6 +52,12 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   updateProfile: async (profileData) => {
     const { data: user } = await userApi.updateProfile(profileData);
+    set({ user });
+    return user;
+  },
+
+  switchAccountType: async (payload) => {
+    const { data: user } = await userApi.switchAccountType(payload);
     set({ user });
     return user;
   },

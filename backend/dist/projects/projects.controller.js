@@ -30,6 +30,9 @@ let ProjectsController = class ProjectsController {
     async findOne(id) {
         return this.projectsService.findById(id);
     }
+    async update(id, updateProjectDto, req) {
+        return this.projectsService.update(id, req.user.userId, updateProjectDto);
+    }
     async remove(id, req) {
         return this.projectsService.delete(id, req.user.userId);
     }
@@ -57,6 +60,15 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ProjectsController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Patch)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, project_dto_1.UpdateProjectDto, Object]),
+    __metadata("design:returntype", Promise)
+], ProjectsController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),

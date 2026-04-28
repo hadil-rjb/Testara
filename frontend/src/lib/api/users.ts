@@ -19,6 +19,11 @@ export interface CompleteOnboardingData {
   companyName?: string;
 }
 
+export interface SwitchAccountTypeData {
+  accountType: 'individual' | 'enterprise';
+  companyName?: string;
+}
+
 export const userApi = {
   getProfile: () => api.get('/users/me'),
   updateProfile: (data: UpdateProfileData) => api.put('/users/me', data),
@@ -26,4 +31,6 @@ export const userApi = {
     api.post('/users/me/change-password', data),
   completeOnboarding: (data: CompleteOnboardingData) =>
     api.put('/users/me/onboarding', data),
+  switchAccountType: (data: SwitchAccountTypeData) =>
+    api.put('/users/me/account-type', data),
 };

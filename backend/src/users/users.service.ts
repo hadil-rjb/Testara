@@ -3,12 +3,16 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { User, UserDocument } from './schemas/user.schema';
-import { CreateUserDto, UpdateUserDto, OnboardingDto, ChangePasswordDto } from './dto/create-user.dto';
+import { CreateUserDto, UpdateUserDto, OnboardingDto, ChangePasswordDto, SwitchAccountTypeDto } from './dto/create-user.dto';
 import { AccountType } from './schemas/user.schema';
+import { Team, TeamDocument } from '../teams/schemas/team.schema';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectModel(Team.name) private teamModel: Model<TeamDocument>,
+  ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserDocument> {
     const existing = await this.userModel.findOne({ email: createUserDto.email });
@@ -90,6 +94,31 @@ export class UsersService {
     }
     user.password = await bcrypt.hash(dto.newPassword, 12);
     await user.save();
+  }
+
+  async switchAccountType(id: string, dto: SwitchAccountTypeDto): Promise<UserDocument> {
+    if (dto.accountType === AccountType.ENTERPRISE && !dto.companyName?.trim()) {
+      throw new BadRequestException(
+        "Le nom de l'entreprise est requis pour un compte entreprise",
+      );
+    }
+
+    // Downgrading to Individual: permanently delete all teams owned by this user.
+    // This matches the confirmation shown in the frontend before the call is made.
+    if (dto.accountType === AccountType.INDIVIDUAL) {
+      await this.teamModel.deleteMany({ owner: id });
+    }
+
+    const update: Partial<User> = {
+      accountType: dto.accountType,
+      companyName:
+        dto.accountType === AccountType.ENTERPRISE
+          ? dto.companyName?.trim()
+          : undefined,
+    };
+    const user = await this.userModel.findByIdAndUpdate(id, update, { new: true });
+    if (!user) throw new NotFoundException('Utilisateur non trouvé');
+    return user;
   }
 
   async completeOnboarding(id: string, onboardingDto: OnboardingDto): Promise<UserDocument> {

@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from 'react';
 import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/routing';
 import { useAuthStore } from '@/stores/auth-store';
@@ -19,11 +20,14 @@ export default function RegisterPage() {
   const t = useTranslations('auth');
   const tc = useTranslations('common');
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const inviteToken = searchParams.get('inviteToken');
+  const prefillEmail = searchParams.get('email');
   const { register } = useAuthStore();
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(prefillEmail ?? '');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -78,7 +82,13 @@ export default function RegisterPage() {
     setSubmitting(true);
     try {
       await register({ firstName, lastName, email, password });
-      router.push('/auth/account-type');
+      if (inviteToken) {
+        router.push(
+          `/auth/account-type?inviteToken=${encodeURIComponent(inviteToken)}`,
+        );
+      } else {
+        router.push('/auth/account-type');
+      }
     } catch (err) {
       setError(getApiError(err, t('errors.registrationFailed')));
     } finally {
@@ -260,7 +270,14 @@ export default function RegisterPage() {
 
           <p className="text-center text-sm mt-6 text-body">
             {t('haveAccount')}{' '}
-            <Link href="/auth/login" className="text-primary font-semibold hover:underline">
+            <Link
+              href={
+                inviteToken
+                  ? `/auth/login?inviteToken=${encodeURIComponent(inviteToken)}${prefillEmail ? `&email=${encodeURIComponent(prefillEmail)}` : ''}`
+                  : '/auth/login'
+              }
+              className="text-primary font-semibold hover:underline"
+            >
               {t('signIn')}
             </Link>
           </p>

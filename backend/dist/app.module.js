@@ -14,6 +14,7 @@ const throttler_1 = require("@nestjs/throttler");
 const auth_module_1 = require("./auth/auth.module");
 const users_module_1 = require("./users/users.module");
 const projects_module_1 = require("./projects/projects.module");
+const teams_module_1 = require("./teams/teams.module");
 const mail_module_1 = require("./mail/mail.module");
 let AppModule = class AppModule {
 };
@@ -27,6 +28,7 @@ exports.AppModule = AppModule = __decorate([
             auth_module_1.AuthModule,
             users_module_1.UsersModule,
             projects_module_1.ProjectsModule,
+            teams_module_1.TeamsModule,
             mail_module_1.MailModule,
         ],
     })

@@ -5,5 +5,6 @@ export {
   formatNumber,
   formatBytes,
   truncate,
+  formatRelativeTime,
 } from './format';
 export { getApiError } from './errors';

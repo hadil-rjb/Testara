@@ -18,6 +18,43 @@ export class MailService {
     });
   }
 
+  async sendTeamInvitationEmail(
+    to: string,
+    token: string,
+    context: {
+      teamName: string;
+      inviterName: string;
+      role: string;
+      isExistingUser: boolean;
+    },
+  ): Promise<void> {
+    const frontendUrl = this.configService.get('FRONTEND_URL');
+    const inviteUrl = `${frontendUrl}/fr/invite/${token}`;
+    const { teamName, inviterName, role, isExistingUser } = context;
+    const action = isExistingUser
+      ? 'Connectez-vous pour accepter l\'invitation'
+      : 'Créez votre compte Testara pour rejoindre l\'équipe';
+
+    await this.transporter.sendMail({
+      from: this.configService.get('MAIL_FROM'),
+      to,
+      subject: `Testara - Invitation à rejoindre l'équipe "${teamName}"`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #6C63FF;">Vous êtes invité à rejoindre ${teamName}</h2>
+          <p><strong>${inviterName}</strong> vous invite à rejoindre l'équipe
+          <strong>${teamName}</strong> sur Testara en tant que <strong>${role}</strong>.</p>
+          <p>${action} :</p>
+          <a href="${inviteUrl}" style="display: inline-block; background: #6C63FF; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 16px 0;">
+            Accepter l'invitation
+          </a>
+          <p style="color: #666; font-size: 14px;">Ce lien expire dans 7 jours.</p>
+          <p style="color: #666; font-size: 14px;">Si vous n'attendiez pas cette invitation, ignorez cet email.</p>
+        </div>
+      `,
+    });
+  }
+
   async sendResetPasswordEmail(to: string, token: string): Promise<void> {
     const frontendUrl = this.configService.get('FRONTEND_URL');
     const resetUrl = `${frontendUrl}/reset-password?token=${token}`;

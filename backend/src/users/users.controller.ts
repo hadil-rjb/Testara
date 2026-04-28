@@ -1,6 +1,6 @@
 import { Controller, Get, Put, Post, Body, UseGuards, Req, HttpCode } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { UpdateUserDto, OnboardingDto, ChangePasswordDto } from './dto/create-user.dto';
+import { UpdateUserDto, OnboardingDto, ChangePasswordDto, SwitchAccountTypeDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('users')
@@ -27,6 +27,14 @@ export class UsersController {
   @Put('me/onboarding')
   async completeOnboarding(@Req() req, @Body() onboardingDto: OnboardingDto) {
     const user = await this.usersService.completeOnboarding(req.user.userId, onboardingDto);
+    const { password, resetPasswordToken, resetPasswordExpires, ...result } = user.toObject();
+    return result;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('me/account-type')
+  async switchAccountType(@Req() req, @Body() dto: SwitchAccountTypeDto) {
+    const user = await this.usersService.switchAccountType(req.user.userId, dto);
     const { password, resetPasswordToken, resetPasswordExpires, ...result } = user.toObject();
     return result;
   }

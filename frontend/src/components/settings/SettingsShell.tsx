@@ -1,9 +1,9 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { User, Shield, Sparkles, LucideIcon } from 'lucide-react';
+import { User, Shield, Sparkles, Building2, LucideIcon } from 'lucide-react';
 
-export type SettingsTab = 'profile' | 'security' | 'preferences';
+export type SettingsTab = 'profile' | 'security' | 'preferences' | 'account';
 
 interface SettingsShellProps {
   active: SettingsTab;
@@ -20,6 +20,7 @@ export default function SettingsShell({
 
   const tabs: { key: SettingsTab; label: string; icon: LucideIcon }[] = [
     { key: 'profile', label: t('tabs.profile'), icon: User },
+    { key: 'account', label: t('tabs.account'), icon: Building2 },
     { key: 'security', label: t('tabs.security'), icon: Shield },
     { key: 'preferences', label: t('tabs.preferences'), icon: Sparkles },
   ];

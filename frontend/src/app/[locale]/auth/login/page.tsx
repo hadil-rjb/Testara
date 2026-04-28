@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from 'react';
 import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { useAuthStore } from '@/stores/auth-store';
@@ -22,9 +23,12 @@ export default function LoginPage() {
   const t = useTranslations('auth');
   const tc = useTranslations('common');
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const inviteToken = searchParams.get('inviteToken');
+  const prefillEmail = searchParams.get('email');
   const { login } = useAuthStore();
 
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(prefillEmail ?? '');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -66,7 +70,17 @@ export default function LoginPage() {
     setSubmitting(true);
     try {
       const user = await login(email, password);
-      router.push(user.onboardingCompleted ? '/dashboard' : '/auth/account-type');
+      if (inviteToken) {
+        if (user.onboardingCompleted) {
+          router.push(`/invite/${inviteToken}`);
+        } else {
+          router.push(
+            `/auth/account-type?inviteToken=${encodeURIComponent(inviteToken)}`,
+          );
+        }
+      } else {
+        router.push(user.onboardingCompleted ? '/dashboard' : '/auth/account-type');
+      }
     } catch (err) {
       setError(getApiError(err, t('errors.loginFailed')));
     } finally {

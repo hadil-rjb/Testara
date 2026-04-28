@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Link, usePathname, useRouter } from '@/i18n/routing';
 import { projectApi } from '@/lib/api';
 import { STORAGE_KEYS } from '@/lib/constants';
+import { useAuthStore } from '@/stores/auth-store';
 import { useLocalStorage, useToast } from '@/hooks';
 import { getApiError } from '@/lib/utils';
 import Image from 'next/image';
@@ -29,6 +30,14 @@ interface Project {
   _id: string;
   name?: string;
   title?: string;
+  /**
+   * `'owner'` means the current user owns this project; anything else
+   * (`'team'` or `'member'`) is access granted via a team — for those
+   * we hide the rename / delete menu since only the owner can mutate.
+   * Optional for back-compat with callers that haven't been wired yet.
+   */
+  accessSource?: 'owner' | 'team' | 'member';
+  sharedViaTeam?: string;
 }
 
 interface SidebarProps {
@@ -52,6 +61,8 @@ export default function Sidebar({ recentProjects = [] }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const toast = useToast();
+  const { user } = useAuthStore();
+  const isEnterprise = user?.accountType === 'enterprise';
 
   const [collapsed, setCollapsed] = useState(false);
   const [recentOpen, setRecentOpen] = useState(true);
@@ -240,13 +251,17 @@ export default function Sidebar({ recentProjects = [] }: SidebarProps) {
       active: false,
       disabled: true,
     },
-    {
-      key: 'team',
-      icon: Users,
-      href: '/dashboard',
-      active: false,
-      disabled: true,
-    },
+    // Team is enterprise-only: hidden for individual accounts
+    ...(isEnterprise
+      ? [
+          {
+            key: 'team' as const,
+            icon: Users,
+            href: '/dashboard/team',
+            active: isActive('/dashboard/team'),
+          },
+        ]
+      : []),
     {
       key: 'settings',
       icon: Settings,
@@ -318,11 +333,7 @@ export default function Sidebar({ recentProjects = [] }: SidebarProps) {
               collapsed ? 'w-7 h-7' : 'w-5 h-5'
             }`}
           >
-            <Plus
-              size={collapsed ? 14 : 12}
-              strokeWidth={2.75}
-              className="text-white"
-            />
+            <Plus size={collapsed ? 14 : 12} strokeWidth={2.75} className="text-white" />
           </span>
           {!collapsed && <span className="truncate">{t('newProject')}</span>}
         </Link>
@@ -391,7 +402,7 @@ export default function Sidebar({ recentProjects = [] }: SidebarProps) {
 
       {/* ============ RECENT PROJECTS ============ */}
       {!collapsed && (
-        <div className="px-3 mt-6 flex-1 min-h-0 flex flex-col">
+        <div className="px-3 mt-4 flex-1 min-h-0 flex flex-col">
           <button
             onClick={() => setRecentOpen(!recentOpen)}
             className="flex items-center gap-1 px-2.5 h-7 text-[11px] font-semibold uppercase tracking-[0.1em] text-muted hover:text-heading rounded-md transition-colors shrink-0"
@@ -408,37 +419,47 @@ export default function Sidebar({ recentProjects = [] }: SidebarProps) {
           </button>
 
           {recentOpen && (
-            <div className="mt-1 space-y-0.5 overflow-y-auto pb-4 custom-scroll">
+            <div className="mt-1 space-y-0.5 flex-1 overflow-y-auto custom-scroll">
               {sortedProjects.length > 0 ? (
                 sortedProjects.slice(0, 8).map((project) => {
                   const isActiveItem = isProjectItemActive(project._id);
                   const isRenaming = renamingProjectId === project._id;
+                  const isMenuOpen = openProjectMenuId === project._id;
+                  // Only the owner can rename / delete; for projects we
+                  // can access via a team we hide the action menu entirely.
+                  // Treat missing accessSource as owner for back-compat.
+                  const canManage =
+                    !project.accessSource || project.accessSource === 'owner';
+
+                  const isShared = !canManage;
 
                   return (
                     <div
                       key={project._id}
-                      className="group/item relative"
+                      ref={isMenuOpen ? menuRef : undefined}
+                      className="group/item relative flex items-center"
+                      data-active={isActiveItem || undefined}
+                      data-menu-open={isMenuOpen || undefined}
                     >
+                      {/* ===== PROJECT LINK ===== */}
                       {editingProjectId === project._id ? (
-                        <div className="flex items-center px-2.5 h-9 rounded-lg ring-1 ring-primary/40 bg-black/[0.03]">
+                        <div className="flex flex-1 items-center px-2.5 h-9 rounded-lg ring-1 ring-primary/40 surface-tertiary">
                           <input
                             autoFocus
                             value={editingProjectName}
-                            onChange={(event) =>
-                              setEditingProjectName(event.target.value)
-                            }
+                            onChange={(e) => setEditingProjectName(e.target.value)}
                             onBlur={() => void submitInlineRename(project)}
-                            onKeyDown={(event) => {
-                              if (event.key === 'Enter') {
-                                event.preventDefault();
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
                                 void submitInlineRename(project);
                               }
-                              if (event.key === 'Escape') {
-                                event.preventDefault();
+                              if (e.key === 'Escape') {
+                                e.preventDefault();
                                 cancelInlineRename();
                               }
                             }}
-                            className="flex-1 min-w-0 bg-transparent text-[13.5px] text-heading outline-none placeholder:text-muted"
+                            className="flex-1 bg-transparent text-[13.5px] text-heading outline-none placeholder:text-muted"
                             placeholder={tp('rename')}
                             aria-label={tp('rename')}
                             disabled={isRenaming}
@@ -447,98 +468,105 @@ export default function Sidebar({ recentProjects = [] }: SidebarProps) {
                       ) : (
                         <Link
                           href={`/workspace/${project._id}`}
-                          data-active={isActiveItem}
-                          className={`relative flex items-center px-2.5 pr-9 h-9 rounded-lg text-[13.5px] transition-colors ${
+                          title={project.title ?? project.name ?? 'Untitled project'}
+                          className={`relative flex flex-1 items-center gap-1.5 px-2.5 ${
+                            canManage ? 'pr-9' : 'pr-2.5'
+                          } h-9 rounded-lg text-[13.5px] transition-colors ${
                             isActiveItem
-                              ? 'bg-black/[0.06] text-heading font-medium'
-                              : 'text-body hover:bg-black/5 hover:text-heading'
+                              ? 'surface-tertiary text-heading font-medium'
+                              : 'text-body hover:surface-tertiary hover:text-heading'
                           }`}
-                          onClick={(event) => {
-                            setOpenProjectMenuId(null);
-                            markProjectAsOpened(
-                              project._id,
-                              Math.round(
-                                window.performance.timeOrigin + event.timeStamp,
-                              ),
-                            );
-                          }}
+                          onClick={() => setOpenProjectMenuId(null)}
+                          aria-current={isActiveItem ? 'page' : undefined}
                         >
                           {/* Active indicator bar */}
                           <span
                             className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-r-full transition-colors ${
                               isActiveItem ? 'bg-primary' : 'bg-transparent'
                             }`}
+                            aria-hidden="true"
                           />
-                          <span className="truncate">
+
+                          <span className="truncate flex-1">
                             {project.title ?? project.name ?? 'Untitled project'}
                           </span>
+
+                          {/* Shared indicator — visible at all times so the
+                             user knows why the action menu isn't there. */}
+                          {isShared && (
+                            <span
+                              className="flex-shrink-0 inline-flex items-center justify-center w-4 h-4 rounded-full bg-primary/10 text-primary"
+                              title={
+                                project.sharedViaTeam
+                                  ? tp('sharedViaTeam', { team: project.sharedViaTeam })
+                                  : tp('sharedBadge')
+                              }
+                              aria-label={tp('sharedBadge')}
+                            >
+                              <Users size={9} strokeWidth={2.25} />
+                            </span>
+                          )}
                         </Link>
                       )}
 
-                      {/* Actions menu trigger */}
-                      {editingProjectId !== project._id && (
-                        <div
-                          ref={
-                            openProjectMenuId === project._id ? menuRef : undefined
-                          }
-                          className={`absolute right-1.5 top-1/2 -translate-y-1/2 transition-opacity duration-150 ${
-                            openProjectMenuId === project._id
-                              ? 'opacity-100'
-                              : 'opacity-0 pointer-events-none group-hover/item:opacity-100 group-hover/item:pointer-events-auto group-focus-within/item:opacity-100 group-focus-within/item:pointer-events-auto'
-                          }`}
-                        >
+                      {/* ===== ACTION BUTTON ===== */}
+                      {editingProjectId !== project._id && canManage && (
+                        <div className="absolute right-1.5 top-1/2 -translate-y-1/2 z-20">
                           <button
                             type="button"
-                            onClick={(event) => {
-                              event.preventDefault();
-                              event.stopPropagation();
-                              setOpenProjectMenuId((prev) =>
-                                prev === project._id ? null : project._id,
-                              );
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setOpenProjectMenuId(isMenuOpen ? null : project._id);
                             }}
-                            className={`inline-flex items-center justify-center w-6 h-6 rounded-md transition-colors ${
-                              openProjectMenuId === project._id
-                                ? 'bg-black/10 text-heading'
-                                : 'text-muted hover:bg-black/10 hover:text-heading'
+                            className={`w-6 h-6 flex items-center justify-center rounded-md transition-all ${
+                              isMenuOpen
+                                ? 'opacity-100 surface-tertiary text-heading'
+                                : 'text-muted opacity-0 group-hover/item:opacity-100 group-focus-within/item:opacity-100 hover:surface-tertiary hover:text-heading'
                             }`}
-                            aria-label="Project actions"
-                            aria-expanded={openProjectMenuId === project._id}
-                            title="Project actions"
+                            aria-label={tp('rename') + ' / ' + tp('delete')}
+                            aria-haspopup="menu"
+                            aria-expanded={isMenuOpen}
                           >
                             <MoreHorizontal size={14} />
                           </button>
 
-                          {openProjectMenuId === project._id && (
+                          {/* ===== DROPDOWN ===== */}
+                          {isMenuOpen && (
                             <div
-                              className="absolute right-0 top-[calc(100%+4px)] min-w-[160px] rounded-lg border border-theme surface-card shadow-lg animate-in fade-in slide-in-from-top-1 duration-150 z-30"
                               role="menu"
+                              className="absolute right-0 top-[calc(100%+6px)] min-w-[160px] rounded-lg border border-theme surface-card shadow-lg z-50 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-150"
+                              onClick={(e) => e.stopPropagation()}
                             >
                               <button
-                                type="button"
                                 role="menuitem"
-                                onClick={(event) => {
-                                  event.preventDefault();
-                                  event.stopPropagation();
+                                type="button"
+                                className="flex w-full items-center gap-2.5 px-3 h-9 text-[13px] text-body hover:surface-tertiary hover:text-heading transition-colors"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
                                   startInlineRename(project);
                                 }}
-                                className="flex w-full items-center gap-2.5 px-3 h-9 text-[13px] text-body hover:bg-black/5 hover:text-heading transition-colors"
                               >
                                 <Pencil size={13} strokeWidth={1.8} />
                                 <span>{tp('rename')}</span>
                               </button>
+
                               <div
                                 className="h-px w-full"
-                                style={{ backgroundColor: 'var(--border-light)' }}
+                                style={{ backgroundColor: 'var(--border-color)' }}
+                                aria-hidden="true"
                               />
+
                               <button
-                                type="button"
                                 role="menuitem"
-                                onClick={(event) => {
-                                  event.preventDefault();
-                                  event.stopPropagation();
+                                type="button"
+                                className="flex w-full items-center gap-2.5 px-3 h-9 text-[13px] text-error hover:bg-error/10 transition-colors"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
                                   void handleDeleteProject(project);
                                 }}
-                                className="flex w-full items-center gap-2.5 px-3 h-9 text-[13px] text-error hover:bg-error/10 transition-colors"
                               >
                                 <Trash2 size={13} strokeWidth={1.8} />
                                 <span>{tp('delete')}</span>
@@ -559,8 +587,6 @@ export default function Sidebar({ recentProjects = [] }: SidebarProps) {
           )}
         </div>
       )}
-
-      
     </div>
   );
 

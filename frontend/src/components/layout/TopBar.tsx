@@ -5,7 +5,8 @@ import { useTranslations } from 'next-intl';
 import { useAuthStore } from '@/stores/auth-store';
 import { useTheme } from '@/components/providers';
 import { useRouter, Link } from '@/i18n/routing';
-import { Search, Bell, Sun, Moon, LogOut, Settings, UserCircle2 } from 'lucide-react';
+import { Search, Sun, Moon, LogOut, Settings, UserCircle2 } from 'lucide-react';
+import NotificationsBell from '@/components/notifications/NotificationsBell';
 
 export default function TopBar() {
   const tc = useTranslations('common');
@@ -44,7 +45,7 @@ export default function TopBar() {
 
   return (
     <header
-      className="sticky top-0 z-30 flex items-center justify-between gap-4 px-5 sm:px-6 h-16 border-b border-theme backdrop-blur"
+      className="relative z-30 flex-shrink-0 flex items-center justify-between gap-4 px-5 sm:px-6 h-16 border-b border-theme backdrop-blur"
       style={{ backgroundColor: 'color-mix(in srgb, var(--bg-primary) 92%, transparent)' }}
     >
       {/* Search */}
@@ -75,20 +76,7 @@ export default function TopBar() {
         </button>
 
         {/* Notifications */}
-        <button
-          className="icon-btn relative"
-          aria-label="Notifications"
-        >
-          <Bell size={17} />
-          <span
-            className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full ring-2"
-            style={{
-              backgroundColor: 'var(--color-error)',
-              // @ts-expect-error -- CSS var for ringColor
-              '--tw-ring-color': 'var(--bg-primary)',
-            }}
-          />
-        </button>
+        <NotificationsBell />
 
         {/* Avatar */}
         <div className="relative">

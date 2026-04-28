@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpdateUserDto = exports.OnboardingDto = exports.CreateUserDto = void 0;
+exports.ChangePasswordDto = exports.SwitchAccountTypeDto = exports.UpdateUserDto = exports.OnboardingDto = exports.CreateUserDto = void 0;
 const class_validator_1 = require("class-validator");
 const user_schema_1 = require("../schemas/user.schema");
 class CreateUserDto {
@@ -70,6 +70,11 @@ __decorate([
     __metadata("design:type", String)
 ], UpdateUserDto.prototype, "lastName", void 0);
 __decorate([
+    (0, class_validator_1.IsEmail)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateUserDto.prototype, "email", void 0);
+__decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
@@ -84,4 +89,29 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateUserDto.prototype, "avatar", void 0);
+class SwitchAccountTypeDto {
+}
+exports.SwitchAccountTypeDto = SwitchAccountTypeDto;
+__decorate([
+    (0, class_validator_1.IsEnum)(user_schema_1.AccountType),
+    __metadata("design:type", String)
+], SwitchAccountTypeDto.prototype, "accountType", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], SwitchAccountTypeDto.prototype, "companyName", void 0);
+class ChangePasswordDto {
+}
+exports.ChangePasswordDto = ChangePasswordDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], ChangePasswordDto.prototype, "currentPassword", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MinLength)(8),
+    __metadata("design:type", String)
+], ChangePasswordDto.prototype, "newPassword", void 0);
 //# sourceMappingURL=create-user.dto.js.map

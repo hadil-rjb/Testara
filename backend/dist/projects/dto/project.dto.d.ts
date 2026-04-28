@@ -3,3 +3,7 @@ export declare class CreateProjectDto {
     url: string;
     environment?: string;
 }
+export declare class UpdateProjectDto {
+    name?: string;
+    environment?: string;
+}

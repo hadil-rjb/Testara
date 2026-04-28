@@ -52,9 +52,11 @@ const mongoose_2 = require("mongoose");
 const bcrypt = __importStar(require("bcrypt"));
 const user_schema_1 = require("./schemas/user.schema");
 const user_schema_2 = require("./schemas/user.schema");
+const team_schema_1 = require("../teams/schemas/team.schema");
 let UsersService = class UsersService {
-    constructor(userModel) {
+    constructor(userModel, teamModel) {
         this.userModel = userModel;
+        this.teamModel = teamModel;
     }
     async create(createUserDto) {
         const existing = await this.userModel.findOne({ email: createUserDto.email });
@@ -98,7 +100,49 @@ let UsersService = class UsersService {
         return user;
     }
     async update(id, updateUserDto) {
+        if (updateUserDto.email) {
+            const normalized = updateUserDto.email.toLowerCase();
+            const existing = await this.userModel.findOne({ email: normalized });
+            if (existing && String(existing._id) !== String(id)) {
+                throw new common_1.ConflictException('Un compte avec cet email existe déjà');
+            }
+            updateUserDto.email = normalized;
+        }
         const user = await this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true });
+        if (!user)
+            throw new common_1.NotFoundException('Utilisateur non trouvé');
+        return user;
+    }
+    async changePassword(id, dto) {
+        const user = await this.userModel.findById(id);
+        if (!user)
+            throw new common_1.NotFoundException('Utilisateur non trouvé');
+        if (user.isGoogleUser && !user.password) {
+            throw new common_1.BadRequestException('Les comptes Google ne peuvent pas modifier leur mot de passe ici');
+        }
+        const valid = user.password
+            ? await bcrypt.compare(dto.currentPassword, user.password)
+            : false;
+        if (!valid) {
+            throw new common_1.UnauthorizedException('Mot de passe actuel incorrect');
+        }
+        user.password = await bcrypt.hash(dto.newPassword, 12);
+        await user.save();
+    }
+    async switchAccountType(id, dto) {
+        if (dto.accountType === user_schema_2.AccountType.ENTERPRISE && !dto.companyName?.trim()) {
+            throw new common_1.BadRequestException("Le nom de l'entreprise est requis pour un compte entreprise");
+        }
+        if (dto.accountType === user_schema_2.AccountType.INDIVIDUAL) {
+            await this.teamModel.deleteMany({ owner: id });
+        }
+        const update = {
+            accountType: dto.accountType,
+            companyName: dto.accountType === user_schema_2.AccountType.ENTERPRISE
+                ? dto.companyName?.trim()
+                : undefined,
+        };
+        const user = await this.userModel.findByIdAndUpdate(id, update, { new: true });
         if (!user)
             throw new common_1.NotFoundException('Utilisateur non trouvé');
         return user;
@@ -138,6 +182,8 @@ exports.UsersService = UsersService;
 exports.UsersService = UsersService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_1.InjectModel)(user_schema_1.User.name)),
-    __metadata("design:paramtypes", [mongoose_2.Model])
+    __param(1, (0, mongoose_1.InjectModel)(team_schema_1.Team.name)),
+    __metadata("design:paramtypes", [mongoose_2.Model,
+        mongoose_2.Model])
 ], UsersService);
 //# sourceMappingURL=users.service.js.map

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/routing";
 import { useAuthStore } from "@/stores/auth-store";
@@ -10,6 +11,8 @@ import AuthInput from "@/components/auth/AuthInput";
 export default function AccountTypePage() {
   const t = useTranslations("auth");
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const inviteToken = searchParams.get("inviteToken");
   const { user, isAuthenticated, isLoading, completeOnboarding } =
     useAuthStore();
 
@@ -24,11 +27,15 @@ export default function AccountTypePage() {
   useEffect(() => {
     if (isLoading) return;
     if (!isAuthenticated) {
-      router.push("/auth/register");
+      router.push(
+        inviteToken
+          ? `/auth/register?inviteToken=${encodeURIComponent(inviteToken)}`
+          : "/auth/register",
+      );
     } else if (user?.onboardingCompleted) {
-      router.push("/dashboard");
+      router.push(inviteToken ? `/invite/${inviteToken}` : "/dashboard");
     }
-  }, [isLoading, isAuthenticated, user, router]);
+  }, [isLoading, isAuthenticated, user, router, inviteToken]);
 
   const handleContinue = async () => {
     if (!selected) return;
@@ -42,7 +49,7 @@ export default function AccountTypePage() {
         data.companyName = companyName.trim();
       }
       await completeOnboarding(data);
-      router.push("/dashboard");
+      router.push(inviteToken ? `/invite/${inviteToken}` : "/dashboard");
     } catch (err: unknown) {
       setError((err as { response?: { data?: { message?: string } } }).response?.data?.message || "Something went wrong");
     } finally {
